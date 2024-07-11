@@ -131,6 +131,23 @@ p3.Format.Borders.Colors = Colors.Navy;
 p3.Format.Borders.Distance = 3;
 ```
 
+The Paragraph.Format attribute has the Borders attributes. In the borders attributes we can change some values of it, like:
+
+* Width
+* Color
+* Distance (distance of the border to the text, the text remains at the same place, only the border is put away from the text, except the top distance; you can set all at once with this attribute):
+    * DistanceFromBottom
+    * DistanceFromTop
+    * DistanceFromLeft
+    * DistanceFromRight
+* Border (Individual borders; the border attribute doesn't exist; The individual borders are Border objetcs, and have the same attributes of the Borders attribute, except for these ones below, and distances):
+    * Bottom
+    * Top
+    * Left
+    * Right
+* BordersCleared (bool, information about if the border is cleared or not)
+* Visible (bool; only works for the borders set as a whole, not the individual ones)
+
 ### Shading
 
 ```cs
