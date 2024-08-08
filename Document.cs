@@ -1,11 +1,19 @@
-﻿namespace pdf_scaffold;
+﻿using pdf_scaffold.Styling;
 
-public class Document
-{
-    public string? Title { get; set; }
-    public string? Author { get; set; }
-    public string? Subject { get; set; }
-    public List<string>? Keywords { get; set; }
-    public required List<Section> Sections { get; set; }
-    public List<Style>? Styles { get; set; }
+namespace pdf_scaffold;
+
+public class Document(
+    string? title = null,
+    string? author = null,
+    string? subject = null,
+    List<string>? keywords = null,
+    List<Style>? styles = null,
+    List<Section>? sections = null
+) {
+    public string? Title { get; } = title;
+    public string? Author { get; } = author;
+    public string? Subject { get; } = subject;
+    public List<string>? Keywords { get; } = keywords;
+    public List<Section>? Sections { get; } = sections;
+    public List<Style>? Styles { get; } = styles;
 }
