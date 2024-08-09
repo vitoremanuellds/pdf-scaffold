@@ -4,7 +4,8 @@ namespace pdf_scaffold.Metrics;
 
 public class Measure {
 
-    public double? Value { get; }
+    public double Value { get; }
+    public bool IsPercentage { get; } = false;
 
     public Measure(
         double? points = null, 
@@ -15,17 +16,25 @@ public class Measure {
         double? percentage = null
     ) {
         if (points != null) {
-            Value = points;
+            Value = (double) points;
         } else if (inches != null) {
-            Value = inches;
+            Value = 72 * (double) inches;
         } else if (picas != null) {
-            Value = picas;
+            Value = 12 * (double) picas;
         } else if (centimeters != null) {
-            Value = centimeters;
+            Value = 72 / 2.54 * (double) centimeters;
         } else if (millimeters != null) {
-            Value = millimeters;
+            Value = 72 / 25.4 * (double) millimeters;
+        } else if (percentage != null) {
+            if (percentage <= 0 || percentage > 1) {
+                throw new Exception(
+                    "The value for a percentage measure must be greater than 0 and lesser than or equals to 1!"
+                );
+            }
+            IsPercentage = true;
+            Value = (double) percentage;
         } else {
-            Value = percentage;
+            throw new Exception("No value for the measure was provided!");
         }
     }
 

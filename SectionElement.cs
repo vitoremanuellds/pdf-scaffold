@@ -1,5 +1,7 @@
 namespace pdf_scaffold;
 
-public interface SectionElement {
+public interface ISectionElement {
 
-}
+    object Build(Styling.Style? style, IDictionary<string, Styling.Style> styles);
+
+};

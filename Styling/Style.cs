@@ -6,12 +6,12 @@ namespace pdf_scaffold.Styling;
 public class Style(
     string? name = null,
     Color? fontColor = null,
-    bool bold = false,
-    bool italic = false,
+    bool? bold = null,
+    bool? italic = null,
     Underline? underline = null,
     Measure? fontSize = null,
-    bool superscript = false,
-    bool subscript = false,
+    bool? superscript = null,
+    bool? subscript = null,
     Color? shading = null,
     Measure? width = null,
     Measure? height = null,
@@ -23,18 +23,18 @@ public class Style(
     Borders? borders = null,
     PositionType? positionType = null,
     Padding? padding = null,
-    List<TabStop>? tabstops = null
+    ICollection<TabStop>? tabstops = null
     )
 {
     public string? Name { get; } = name;
     public Color? FontColor { get; } = fontColor;
-    public bool Bold { get; } = bold;
-    public bool Italic { get; } = italic;
+    public bool? Bold { get; } = bold;
+    public bool? Italic { get; } = italic;
     // To do
     public Underline? Underline { get; } = underline;
     public Measure? FontSize { get; } = fontSize;
-    public bool Superscript { get; } = superscript;
-    public bool Subscript { get; } = subscript;
+    public bool? Superscript { get; } = superscript;
+    public bool? Subscript { get; } = subscript;
     public Color? Shading { get; } = shading;
     public Measure? Width { get; } = width;
     public Measure? Height { get; } = height;
@@ -46,5 +46,30 @@ public class Style(
     public Borders? Borders { get; } = borders;
     public PositionType? PositionType { get; } = positionType;
     public Padding? Padding { get; } = padding;
-    public List<TabStop>? Tabstops { get; } = tabstops;
+    public ICollection<TabStop>? Tabstops { get; } = tabstops;
+
+    public Style Merge(Style style) {
+        return new Style(
+            Name ?? style.Name,
+            FontColor ?? style.FontColor,
+            Bold ?? style.Bold,
+            Italic ?? style.Italic,
+            Underline ?? style.Underline,
+            FontSize ?? style.FontSize,
+            Superscript ?? style.Superscript,
+            Subscript ?? style.Subscript,
+            Shading ?? style.Shading,
+            Width ?? style.Width,
+            Height ?? style.Height,
+            TopPosition ?? style.TopPosition,
+            LeftPosition ?? style.LeftPosition,
+            Resolution ?? style.Resolution,
+            VerticalAlignment ?? style.VerticalAlignment,
+            HorizontalAlignment ?? style.HorizontalAlignment,
+            Borders ?? style.Borders,
+            PositionType ?? style.PositionType,
+            Padding ?? style.Padding,
+            Tabstops ?? style.Tabstops
+        );
+    }
 }
