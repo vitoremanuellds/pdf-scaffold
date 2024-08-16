@@ -1,4 +1,5 @@
 ﻿using pdf_scaffold.Styling;
+using pdf_scaffold.Visitors;
 
 namespace pdf_scaffold;
 
@@ -9,7 +10,7 @@ public class Document(
     ICollection<string>? keywords = null,
     ICollection<Style>? styles = null,
     ICollection<Section>? sections = null
-) {
+) : IPdfScaffoldElement {
     public string? Title { get; } = title;
     public string? Author { get; } = author;
     public string? Subject { get; } = subject;
@@ -18,29 +19,19 @@ public class Document(
     private IDictionary<string, Style> _styles;
     public ICollection<Style>? Styles { get; } = styles;
 
-    public MigraDoc.DocumentObjectModel.Document Build() {
-        var document = new MigraDoc.DocumentObjectModel.Document();
-        if (Author != null) { document.Info.Author = Author; }
-        if (Title != null) { document.Info.Title = Title; }
-        if (Subject != null) { document.Info.Subject = Subject; }
-        if (Keywords != null) { document.Info.Keywords = String.Join(" ", Keywords); }
+    public MigraDoc.DocumentObjectModel.Document Build(MigraDoc.DocumentObjectModel.Document? document) {
+        document ??= new MigraDoc.DocumentObjectModel.Document();
 
-        if (Styles != null) {
-            foreach(Style style in Styles) {
-                if (style.Name != null) {
-                    _styles.Add(style.Name, style);
-                }
-            }
-        }
-        
-        if (Sections == null) {
-            throw new Exception("There must be at least one section in the document!");
-        }
+        var visitor = new DefaultVisitor {
+            Document = document
+        };
 
-        foreach(Section section in Sections) {
-            document.Add(section.Build(_styles));
-        }
+        this.Accept(visitor);
+        return visitor.Document;
+    }
 
-        return document;
+    public void Accept(IPdfScaffoldVisitor visitor)
+    {
+        visitor.ForDocument(this);
     }
 }

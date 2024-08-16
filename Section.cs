@@ -1,5 +1,6 @@
 using MigraDoc.DocumentObjectModel;
 using pdf_scaffold.Metrics;
+using pdf_scaffold.Visitors;
 
 namespace pdf_scaffold;
 
@@ -9,7 +10,7 @@ public class Section(
     PageFormat? pageFormat = null,
     Margin? margin = null,
     ICollection<ISectionElement>? elements = null
-) {
+) : IPdfScaffoldElement {
     public Styling.Style? Style { get; } = style;
     public string? UseStyle { get; } = useStyle;
     public PageFormat? PageFormat { get; } = pageFormat;
@@ -81,5 +82,10 @@ public class Section(
         } else {
             section.PageSetup.BottomMargin = Unit.FromPoint(bottom.Value);
         }
+    }
+
+    public void Accept(IPdfScaffoldVisitor visitor)
+    {
+        
     }
 }
