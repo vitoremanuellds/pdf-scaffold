@@ -1,29 +1,31 @@
+using pdf_scaffold.Metrics;
 using pdf_scaffold.Styling;
 using pdf_scaffold.Visitors;
 
 namespace pdf_scaffold.Images;
 
 public class Image(
-    string? path = null,
+    string path,
     Style? style = null,
     string? useStyle = null,
     Crop? cropImage = null
-) : ISectionElement {
+) : ISectionElement, IPdfScaffoldElement {
 
     public Style? Style { get; set; } = style;
     public string? UseStyle { get; } = useStyle;
-    public string? Path { get; } = path;
+    public string Path { get; } = path;
     public Crop? CropImage { get; } = cropImage;
 
-    public void Accept(IPdfScaffoldVisitor visitor)
+    void IPdfScaffoldElement.Accept(IPdfScaffoldVisitor visitor)
     {
-        throw new NotImplementedException();
+        visitor.ForImage(this);
     }
 
-    public void MergeStyles(Style? style)
+    void IPdfScaffoldElement.MergeStyles(Style? style, Dimensions dimensions)
     {
         if (Style != null && style != null) {
             Style = Style.Merge(style);
+            Style.FathersDimensions = dimensions;
         }
     }
 }

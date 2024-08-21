@@ -26,6 +26,7 @@ public class Style(
     ICollection<TabStop>? tabstops = null
     )
 {
+    internal Dimensions? FathersDimensions { get; set; }
     public string? Name { get; } = name;
     public Color? FontColor { get; } = fontColor;
     public bool? Bold { get; } = bold;
@@ -59,8 +60,8 @@ public class Style(
             Superscript ?? style.Superscript,
             Subscript ?? style.Subscript,
             Shading ?? style.Shading,
-            Width,
-            Height,
+            Width ?? style.Width,
+            Height ?? style.Height,
             TopPosition ?? style.TopPosition,
             LeftPosition ?? style.LeftPosition,
             Resolution ?? style.Resolution,
