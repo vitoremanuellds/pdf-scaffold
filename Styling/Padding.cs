@@ -7,7 +7,7 @@ public class Padding
     public Measure? Left { get; }
     public Measure? Right { get; }
     public Measure? Top { get; }
-    public Measure? Bototm { get; }
+    public Measure? Bottom { get; }
 
 
     private Padding(
@@ -19,7 +19,7 @@ public class Padding
         Left = left;
         Right = right;
         Top = top;
-        Bototm = bottom;
+        Bottom = bottom;
     }
 
     public static Padding All(Measure? value = null) {

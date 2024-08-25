@@ -66,6 +66,14 @@ internal static class ForImage {
             mdImage.LineFormat.Visible = border?.Visible ?? true;
             mdImage.LineFormat.Width = MetricsUtil.GetUnitValue(border?.Width, width);
         }
-        // DO PADDING MAYBE
+        
+        Padding? padding = style?.Padding;
+
+        if (padding != null) {
+            mdImage.WrapFormat.DistanceBottom = MetricsUtil.GetUnitValue(padding.Bottom, height);
+            mdImage.WrapFormat.DistanceTop = MetricsUtil.GetUnitValue(padding.Top, height);
+            mdImage.WrapFormat.DistanceLeft = MetricsUtil.GetUnitValue(padding.Left, width);
+            mdImage.WrapFormat.DistanceRight = MetricsUtil.GetUnitValue(padding.Right, width);
+        }
     }
 }
