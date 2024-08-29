@@ -1,13 +1,11 @@
-using MigraDoc.DocumentObjectModel;
+namespace PDFScaffold.Metrics;
 
-namespace pdf_scaffold.Metrics;
-
-public class Measure {
+public class SMeasure {
 
     public double Value { get; }
     public bool IsPercentage { get; } = false;
 
-    public Measure(
+    public SMeasure(
         double? points = null, 
         double? inches = null,
         double? picas = null,

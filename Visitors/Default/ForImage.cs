@@ -1,9 +1,9 @@
 using MigraDoc.DocumentObjectModel;
 using MigraDoc.DocumentObjectModel.Shapes;
-using pdf_scaffold.Metrics;
-using pdf_scaffold.Styling;
+using PDFScaffold.Metrics;
+using PDFScaffold.Styling;
 
-namespace pdf_scaffold.Visitors.Default;
+namespace PDFScaffold.Visitors.Default;
 
 internal static class ForImage {
 

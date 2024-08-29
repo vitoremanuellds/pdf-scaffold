@@ -1,17 +1,16 @@
-using pdf_scaffold.Styling;
+using PDFScaffold.Scaffold;
+using PDFScaffold.Styling;
 
-namespace pdf_scaffold.Layout;
+namespace PDFScaffold.Layout;
 
 public class Column(
-    Style? style = null,
+    SStyle? style = null,
     string? useStyle = null,
     bool? singlePage = false,
-    ICollection<ISectionElement>? elements = null
-) : ISectionElement {
+    ICollection<SSectionElement>? elements = null
+) : SSectionElement(style, useStyle) {
 
-    public Style? Style { get; } = style;
-    public string? UseStyle { get; } = useStyle;
     public bool? SinglePage { get; } = singlePage;
-    public ICollection<ISectionElement>? Elements { get; } = elements;
+    public ICollection<SSectionElement>? Elements { get; } = elements;
 
 }

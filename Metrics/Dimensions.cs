@@ -1,6 +1,6 @@
-namespace pdf_scaffold.Metrics;
+namespace PDFScaffold.Metrics;
 
-internal class Dimensions(double y, double x) {
+internal class SDimensions(double y, double x) {
 
     public double Y { get; set; } = y;
     public double X { get; set; } = x;

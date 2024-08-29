@@ -1,11 +1,9 @@
-using pdf_scaffold.Metrics;
-using pdf_scaffold.Styling;
+using PDFScaffold.Metrics;
+using PDFScaffold.Styling;
 
-namespace pdf_scaffold.Visitors;
+namespace PDFScaffold.Visitors;
 
 public interface IPdfScaffoldElement {
 
     void Accept(IPdfScaffoldVisitor visitor);
-    internal void MergeStyles(Style? style, Dimensions dimensions);
-
 }

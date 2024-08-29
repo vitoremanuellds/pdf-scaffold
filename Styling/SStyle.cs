@@ -1,56 +1,56 @@
 using MigraDoc.DocumentObjectModel;
-using pdf_scaffold.Metrics;
+using PDFScaffold.Metrics;
 
-namespace pdf_scaffold.Styling;
+namespace PDFScaffold.Styling;
 
-public class Style(
+public class SStyle(
     string? name = null,
     Color? fontColor = null,
     bool? bold = null,
     bool? italic = null,
-    Underline? underline = null,
-    Measure? fontSize = null,
+    SUnderline? underline = null,
+    SMeasure? fontSize = null,
     bool? superscript = null,
     bool? subscript = null,
     Color? shading = null,
-    Measure? width = null,
-    Measure? height = null,
-    Measure? topPosition = null,
-    Measure? leftPosition = null,
+    SMeasure? width = null,
+    SMeasure? height = null,
+    SMeasure? topPosition = null,
+    SMeasure? leftPosition = null,
     double? resolution = null,
-    Alignment? verticalAlignment = null,
-    Alignment? horizontalAlignment = null,
-    Borders? borders = null,
-    PositionType? positionType = null,
-    Padding? padding = null,
-    ICollection<TabStop>? tabstops = null
+    SAlignment? verticalAlignment = null,
+    SAlignment? horizontalAlignment = null,
+    SBorders? borders = null,
+    SPositionType? positionType = null,
+    SPadding? padding = null,
+    ICollection<STabStop>? tabstops = null
     )
 {
-    internal Dimensions? FathersDimensions { get; set; }
+    internal SDimensions? FathersDimensions { get; set; }
     public string? Name { get; } = name;
     public Color? FontColor { get; } = fontColor;
     public bool? Bold { get; } = bold;
     public bool? Italic { get; } = italic;
     // To do
-    public Underline? Underline { get; } = underline;
-    public Measure? FontSize { get; } = fontSize;
+    public SUnderline? Underline { get; } = underline;
+    public SMeasure? FontSize { get; } = fontSize;
     public bool? Superscript { get; } = superscript;
     public bool? Subscript { get; } = subscript;
     public Color? Shading { get; } = shading;
-    public Measure? Width { get; } = width;
-    public Measure? Height { get; } = height;
-    public Measure? TopPosition { get; } = topPosition;
-    public Measure? LeftPosition { get; } = leftPosition;
+    public SMeasure? Width { get; } = width;
+    public SMeasure? Height { get; } = height;
+    public SMeasure? TopPosition { get; } = topPosition;
+    public SMeasure? LeftPosition { get; } = leftPosition;
     public double? Resolution { get; } = resolution;
-    public Alignment? VerticalAlignment { get; } = verticalAlignment;
-    public Alignment? HorizontalAlignment { get; } = horizontalAlignment;
-    public Borders? Borders { get; } = borders;
-    public PositionType? PositionType { get; } = positionType;
-    public Padding? Padding { get; } = padding;
-    public ICollection<TabStop>? Tabstops { get; } = tabstops;
+    public SAlignment? VerticalAlignment { get; } = verticalAlignment;
+    public SAlignment? HorizontalAlignment { get; } = horizontalAlignment;
+    public SBorders? Borders { get; } = borders;
+    public SPositionType? PositionType { get; } = positionType;
+    public SPadding? Padding { get; } = padding;
+    public ICollection<STabStop>? Tabstops { get; } = tabstops;
 
-    public Style Merge(Style style) {
-        return new Style(
+    public SStyle Merge(SStyle style) {
+        return new SStyle(
             Name ?? style.Name,
             FontColor ?? style.FontColor,
             Bold ?? style.Bold,

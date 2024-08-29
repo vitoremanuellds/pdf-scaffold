@@ -1,15 +1,15 @@
-using pdf_scaffold.Styling;
+using PDFScaffold.Scaffold;
+using PDFScaffold.Styling;
 
-namespace pdf_scaffold.Layout;
+namespace PDFScaffold.Layout;
 
 public class Container(
-    Style? style = null,
+    SStyle? style = null,
     string? useStyle = null,
     bool? singlePage = false,
-    ISectionElement? content = null
-) : ISectionElement {
-    public Style? Style { get; } = style;
-    public string? UseStyle { get; } = useStyle;
+    SSectionElement? content = null
+) : SSectionElement(style, useStyle) {
+
     public bool? SinglePage { get; } = singlePage;
-    public ISectionElement? Content { get; } = content;
+    public SSectionElement? Content { get; } = content;
 }

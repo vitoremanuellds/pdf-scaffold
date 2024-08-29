@@ -1,4 +1,6 @@
-namespace pdf_scaffold.Visitors.Default;
+using PDFScaffold.Scaffold;
+
+namespace PDFScaffold.Visitors.Default;
 
 internal static class ForDocument {
 

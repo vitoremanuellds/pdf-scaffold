@@ -1,19 +1,18 @@
-using pdf_scaffold.Styling;
+using PDFScaffold.Scaffold;
+using PDFScaffold.Styling;
 
-namespace pdf_scaffold.Texts;
+namespace PDFScaffold.Texts;
 
-public class Link(
+public class SLink(
     string? text = null,
     string? value = null,
-    Style? style = null,
+    SStyle? style = null,
     string? useStyle = null,
     bool breakLine = false
-) {
+) : STextElement(style, useStyle) {
     
     public string? Text { get; } = text;
     public string? Value { get; } = value;
-    public Style? Style { get; } = style;
-    public string? UseStyle { get; } = useStyle;
     public bool BreakLine { get; } = breakLine;
 
 }

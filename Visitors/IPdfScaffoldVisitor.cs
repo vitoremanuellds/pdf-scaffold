@@ -1,14 +1,15 @@
-using pdf_scaffold.Images;
-using pdf_scaffold.Layout;
-using pdf_scaffold.Tables;
-using pdf_scaffold.Texts;
+using PDFScaffold.Images;
+using PDFScaffold.Layout;
+using PDFScaffold.Scaffold;
+using PDFScaffold.Tables;
+using PDFScaffold.Texts;
 
-namespace pdf_scaffold.Visitors;
+namespace PDFScaffold.Visitors;
 
 public interface IPdfScaffoldVisitor {
 
-    void ForDocument(Document document); //
-    void ForSection(Section section); //
+    void ForDocument(SDocument document); //
+    void ForSection(SSection section); //
     void ForImage(Image image);
     void ForColumn(Column column);
     void ForContainer(Container container);

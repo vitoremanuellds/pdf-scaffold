@@ -1,7 +1,8 @@
+using PDFScaffold.Scaffold;
 using MigraDoc.DocumentObjectModel;
-using pdf_scaffold.Metrics;
+using PDFScaffold.Metrics;
 
-namespace pdf_scaffold.Visitors.Default;
+namespace PDFScaffold.Visitors.Default;
 
 internal static class ForSection {
 
@@ -45,7 +46,6 @@ internal static class ForSection {
         var dimensions = new Dimensions(x: x, y: y);
 
         foreach (IPdfScaffoldElement element in elements) {
-            element.MergeStyles(style, dimensions);
             element.Accept(visitor);
         }
     }

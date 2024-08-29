@@ -1,5 +1,5 @@
-namespace pdf_scaffold.Styling;
+namespace PDFScaffold.Styling;
 
-public enum Underline {
+public enum SUnderline {
     None, Dash, DotDash, DotDotDash, Dotted, Single, OnWords
 }

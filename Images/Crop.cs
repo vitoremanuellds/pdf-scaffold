@@ -1,18 +1,18 @@
-using pdf_scaffold.Metrics;
+using PDFScaffold.Metrics;
 
-namespace pdf_scaffold.Images;
+namespace PDFScaffold.Images;
 
-public class Crop {
-    public Measure? FromLeft { get; }
-    public Measure? FromRight { get; }
-    public Measure? FromTop { get; }
-    public Measure? FromBottom { get; }
+public class SCrop {
+    public SMeasure? FromLeft { get; }
+    public SMeasure? FromRight { get; }
+    public SMeasure? FromTop { get; }
+    public SMeasure? FromBottom { get; }
 
-    private Crop(
-        Measure? fromLeft = null, 
-        Measure? fromRight = null, 
-        Measure? fromTop = null, 
-        Measure? fromBottom = null
+    private SCrop(
+        SMeasure? fromLeft = null, 
+        SMeasure? fromRight = null, 
+        SMeasure? fromTop = null, 
+        SMeasure? fromBottom = null
     ) {
         FromLeft = fromLeft;
         FromRight = fromRight;
@@ -20,20 +20,20 @@ public class Crop {
         FromBottom = fromBottom;
     }
 
-    public static Crop All(Measure? value = null) {
-        return new Crop(value, value, value, value);
+    public static SCrop All(SMeasure? value = null) {
+        return new SCrop(value, value, value, value);
     }
 
-    public static Crop Symmetrical(Measure? leftAndRight = null, Measure? topAndBottom = null) {
-        return new Crop(leftAndRight, leftAndRight, topAndBottom, topAndBottom);
+    public static SCrop Symmetrical(SMeasure? leftAndRight = null, SMeasure? topAndBottom = null) {
+        return new SCrop(leftAndRight, leftAndRight, topAndBottom, topAndBottom);
     }
 
-    public static Crop Each(
-        Measure? fromLeft = null, 
-        Measure? fromRight = null, 
-        Measure? fromTop = null, 
-        Measure? fromBottom = null
+    public static SCrop Each(
+        SMeasure? fromLeft = null, 
+        SMeasure? fromRight = null, 
+        SMeasure? fromTop = null, 
+        SMeasure? fromBottom = null
     ) {
-        return new Crop(fromLeft, fromRight, fromTop, fromBottom);
+        return new SCrop(fromLeft, fromRight, fromTop, fromBottom);
     }
 }

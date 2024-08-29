@@ -1,10 +1,10 @@
 using MigraDoc.DocumentObjectModel;
 
-namespace pdf_scaffold.Metrics;
+namespace PDFScaffold.Metrics;
 
-internal class MetricsUtil {
+internal class SMetricsUtil {
 
-    public static Unit GetUnitValue(Measure? measure, double? baseValue) {
+    public static Unit GetUnitValue(SMeasure? measure, double? baseValue) {
         if (measure == null) { return null; }
         if (measure.IsPercentage && baseValue != null) { 
             return Unit.FromPoint(measure.Value * (double) baseValue); 

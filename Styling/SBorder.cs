@@ -1,21 +1,21 @@
 using MigraDoc.DocumentObjectModel;
-using pdf_scaffold.Metrics;
+using PDFScaffold.Metrics;
 
-namespace pdf_scaffold.Styling;
+namespace PDFScaffold.Styling;
 
-public class Border(
-    Measure? width = null,
+public class SBorder(
+    SMeasure? width = null,
     Color? color = null,
     bool visible = false,
-    Measure? distanceFromContent = null,
+    SMeasure? distanceFromContent = null,
     BorderType? borderType = null
 )
 {
 
-    public Measure? Width { get; } = width;
+    public SMeasure? Width { get; } = width;
     public Color? Color { get; } = color;
     public bool Visible { get; } = visible;
-    public Measure? DistanceFromContent { get; } = distanceFromContent;
+    public SMeasure? DistanceFromContent { get; } = distanceFromContent;
     public BorderType? BorderType { get; } = borderType;
 
 }

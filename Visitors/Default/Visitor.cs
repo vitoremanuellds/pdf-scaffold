@@ -1,9 +1,10 @@
-using pdf_scaffold.Images;
-using pdf_scaffold.Layout;
-using pdf_scaffold.Tables;
-using pdf_scaffold.Texts;
+using PDFScaffold.Images;
+using PDFScaffold.Layout;
+using PDFScaffold.Scaffold;
+using PDFScaffold.Tables;
+using PDFScaffold.Texts;
 
-namespace pdf_scaffold.Visitors.Default;
+namespace PDFScaffold.Visitors.Default;
 
 public class Visitor : IPdfScaffoldVisitor
 {
