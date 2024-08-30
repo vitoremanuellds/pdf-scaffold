@@ -24,9 +24,8 @@ public class SStyle(
     SPositionType? positionType = null,
     SPadding? padding = null,
     ICollection<STabStop>? tabstops = null
-    )
-{
-    internal SDimensions? FathersDimensions { get; set; }
+) {
+    internal SDimensions? Dimensions { get; set; }
     public string? Name { get; } = name;
     public Color? FontColor { get; } = fontColor;
     public bool? Bold { get; } = bold;
@@ -49,28 +48,28 @@ public class SStyle(
     public SPadding? Padding { get; } = padding;
     public ICollection<STabStop>? Tabstops { get; } = tabstops;
 
-    public SStyle Merge(SStyle style) {
+    public SStyle Merge(SStyle? style) {
         return new SStyle(
-            Name ?? style.Name,
-            FontColor ?? style.FontColor,
-            Bold ?? style.Bold,
-            Italic ?? style.Italic,
-            Underline ?? style.Underline,
-            FontSize ?? style.FontSize,
-            Superscript ?? style.Superscript,
-            Subscript ?? style.Subscript,
-            Shading ?? style.Shading,
-            Width ?? style.Width,
-            Height ?? style.Height,
-            TopPosition ?? style.TopPosition,
-            LeftPosition ?? style.LeftPosition,
-            Resolution ?? style.Resolution,
-            VerticalAlignment ?? style.VerticalAlignment,
-            HorizontalAlignment ?? style.HorizontalAlignment,
-            Borders ?? style.Borders,
-            PositionType ?? style.PositionType,
-            Padding ?? style.Padding,
-            Tabstops ?? style.Tabstops
+            Name ?? style?.Name,
+            FontColor ?? style?.FontColor,
+            Bold ?? style?.Bold,
+            Italic ?? style?.Italic,
+            Underline ?? style?.Underline,
+            FontSize ?? style?.FontSize,
+            Superscript ?? style?.Superscript,
+            Subscript ?? style?.Subscript,
+            Shading ?? style?.Shading,
+            Width ?? style?.Width,
+            Height ?? style?.Height,
+            TopPosition ?? style?.TopPosition,
+            LeftPosition ?? style?.LeftPosition,
+            Resolution ?? style?.Resolution,
+            VerticalAlignment ?? style?.VerticalAlignment,
+            HorizontalAlignment ?? style?.HorizontalAlignment,
+            Borders ?? style?.Borders,
+            PositionType ?? style?.PositionType,
+            Padding ?? style?.Padding,
+            Tabstops ?? style?.Tabstops
         );
     }
 }

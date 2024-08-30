@@ -3,7 +3,7 @@ using PDFScaffold.Styling;
 
 namespace PDFScaffold.Layout;
 
-public class Row(
+public class SRow(
     SStyle? style = null,
     string? useStyle = null,
     bool? singlePage = false,

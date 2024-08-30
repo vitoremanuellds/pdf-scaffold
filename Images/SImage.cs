@@ -5,7 +5,7 @@ using PDFScaffold.Visitors;
 
 namespace PDFScaffold.Images;
 
-public class Image(
+public class SImage(
     string path,
     SStyle? style = null,
     string? useStyle = null,
@@ -14,9 +14,8 @@ public class Image(
 
     public string Path { get; } = path;
     public SCrop? CropImage { get; } = cropImage;
-    
 
-    void IPdfScaffoldElement.Accept(IPdfScaffoldVisitor visitor)
+    public new void Accept(IPdfScaffoldVisitor visitor)
     {
         visitor.ForImage(this);
     }

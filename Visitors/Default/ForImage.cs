@@ -1,79 +1,89 @@
 using MigraDoc.DocumentObjectModel;
 using MigraDoc.DocumentObjectModel.Shapes;
+using PDFScaffold.Images;
 using PDFScaffold.Metrics;
+using PDFScaffold.Scaffold;
 using PDFScaffold.Styling;
 
 namespace PDFScaffold.Visitors.Default;
 
 internal static class ForImage {
 
-    public static void DoForImage(this Visitor visitor, Images.Image image) {
-        Styling.Style? style = visitor.GetStyle(image.Style, image.UseStyle);
+    public static void DoForImage(this SVisitor visitor, SImage image) {
+        SStyle style = visitor.GetStyle(image.Style, image.UseStyle) ?? new SStyle();
+        style.Merge(image.FathersStyle);
 
-        var mdSection = visitor.Document.LastSection;
-        var mdImage = mdSection.AddImage(image.Path);
+        Image mdImage;
 
-        var crop = image.CropImage;
-        var height = style?.Height?.Value;
-        var width = style?.Width?.Value;
+        object father = visitor.VisitedObjects.Peek();
 
-        if (crop != null && height != null && width != null) {
-            mdImage.PictureFormat.CropTop = MetricsUtil.GetUnitValue(crop.FromTop, height);
-            mdImage.PictureFormat.CropBottom = MetricsUtil.GetUnitValue(crop.FromBottom, height);
-            mdImage.PictureFormat.CropLeft = MetricsUtil.GetUnitValue(crop.FromLeft, width);
-            mdImage.PictureFormat.CropRight = MetricsUtil.GetUnitValue(crop.FromRight, width);
+        if (father != null && father is Section section) {
+            mdImage = section.AddImage(image.Path);
+        } else {
+            throw new Exception("An SImage can not be used outside a Section");
         }
 
-        var x = style?.FathersDimensions?.X;
-        var y = style?.FathersDimensions?.Y;
+        var crop = image.CropImage;
+        var height = style.Height?.Value;
+        var width = style.Width?.Value;
 
-        mdImage.Width = MetricsUtil.GetUnitValue(style?.Width, x);
-        mdImage.Height = MetricsUtil.GetUnitValue(style?.Height, y);
+        if (crop != null && height != null && width != null) {
+            mdImage.PictureFormat.CropTop = SMetricsUtil.GetUnitValue(crop.FromTop, height);
+            mdImage.PictureFormat.CropBottom = SMetricsUtil.GetUnitValue(crop.FromBottom, height);
+            mdImage.PictureFormat.CropLeft = SMetricsUtil.GetUnitValue(crop.FromLeft, width);
+            mdImage.PictureFormat.CropRight = SMetricsUtil.GetUnitValue(crop.FromRight, width);
+        }
+
+        var x = image.FathersStyle?.Dimensions?.X;
+        var y = image.FathersStyle?.Dimensions?.Y;
+
+        mdImage.Width = SMetricsUtil.GetUnitValue(style?.Width, x);
+        mdImage.Height = SMetricsUtil.GetUnitValue(style?.Height, y);
         mdImage.WrapFormat.Style = 
-            style?.PositionType == PositionType.Fixed ?
+            style?.PositionType == SPositionType.Fixed ?
             WrapStyle.None :
             WrapStyle.TopBottom;
         mdImage.RelativeHorizontal = 
-            style?.PositionType == PositionType.Fixed ?
+            style?.PositionType == SPositionType.Fixed ?
             RelativeHorizontal.Page :
             RelativeHorizontal.Column;
         mdImage.RelativeVertical = 
-            style?.PositionType == PositionType.Fixed ?
+            style?.PositionType == SPositionType.Fixed ?
             RelativeVertical.Page :
             RelativeVertical.Paragraph;
 
-        mdImage.Left = MetricsUtil.GetUnitValue(style?.LeftPosition, x); 
-        mdImage.Top = MetricsUtil.GetUnitValue(style?.TopPosition, y);        
+        mdImage.Left = SMetricsUtil.GetUnitValue(style?.LeftPosition, x); 
+        mdImage.Top = SMetricsUtil.GetUnitValue(style?.TopPosition, y);        
         mdImage.Resolution = style?.Resolution ?? 72;
 
-        var dashStyles = new Dictionary<Styling.BorderType, DashStyle>{
-            { Styling.BorderType.Dash, DashStyle.Dash },
-            { Styling.BorderType.DashDot, DashStyle.DashDot },
-            { Styling.BorderType.DashDotDot, DashStyle.DashDotDot },
-            { Styling.BorderType.Solid, DashStyle.Solid },
-            { Styling.BorderType.SquareDot, DashStyle.SquareDot },
+        var dashStyles = new Dictionary<SBorderType, DashStyle>{
+            { SBorderType.Dash, DashStyle.Dash },
+            { SBorderType.DashDot, DashStyle.DashDot },
+            { SBorderType.DashDotDot, DashStyle.DashDotDot },
+            { SBorderType.Solid, DashStyle.Solid },
+            { SBorderType.SquareDot, DashStyle.SquareDot },
         };
 
-        Styling.Border? border = style?.Borders?.Left;
+        SBorder? border = style?.Borders?.Left;
 
         if (border != null) {
             mdImage.LineFormat.Color = border?.Color ?? Colors.Black;
-            Styling.BorderType borderType = 
-                border?.BorderType ?? Styling.BorderType.Solid;
+            SBorderType borderType = 
+                border?.BorderType ?? SBorderType.Solid;
 
             dashStyles.TryGetValue(borderType, out DashStyle dashStyle);
             mdImage.LineFormat.DashStyle = dashStyle;
             mdImage.LineFormat.Visible = border?.Visible ?? true;
-            mdImage.LineFormat.Width = MetricsUtil.GetUnitValue(border?.Width, width);
+            mdImage.LineFormat.Width = SMetricsUtil.GetUnitValue(border?.Width, width);
         }
         
-        Padding? padding = style?.Padding;
+        SPadding? padding = style?.Padding;
 
         if (padding != null) {
-            mdImage.WrapFormat.DistanceBottom = MetricsUtil.GetUnitValue(padding.Bottom, height);
-            mdImage.WrapFormat.DistanceTop = MetricsUtil.GetUnitValue(padding.Top, height);
-            mdImage.WrapFormat.DistanceLeft = MetricsUtil.GetUnitValue(padding.Left, width);
-            mdImage.WrapFormat.DistanceRight = MetricsUtil.GetUnitValue(padding.Right, width);
+            mdImage.WrapFormat.DistanceBottom = SMetricsUtil.GetUnitValue(padding.Bottom, height);
+            mdImage.WrapFormat.DistanceTop = SMetricsUtil.GetUnitValue(padding.Top, height);
+            mdImage.WrapFormat.DistanceLeft = SMetricsUtil.GetUnitValue(padding.Left, width);
+            mdImage.WrapFormat.DistanceRight = SMetricsUtil.GetUnitValue(padding.Right, width);
         }
     }
 }

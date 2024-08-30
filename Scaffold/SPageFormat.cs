@@ -2,9 +2,18 @@ using PDFScaffold.Metrics;
 
 namespace PDFScaffold.Scaffold;
 
+/// <summary>
+/// Defines the Format of the page inside the section.
+/// </summary>
 public class SPageFormat {
-
+    /// <summary>
+    /// Defines the width of the section page.
+    /// </summary>
     public SMeasure Width { get; }
+
+    /// <summary>
+    /// Defines the height of the section page.
+    /// </summary>
     public SMeasure Height { get; }
 
     private SPageFormat(SMeasure width, SMeasure height) {
@@ -12,6 +21,12 @@ public class SPageFormat {
         Height = height;
     }
 
+    /// <summary>
+    /// Defines a custom SPageFormat.
+    /// </summary>
+    /// <param name="width">The custom width of the section's page.</param>
+    /// <param name="height">The custom height of the section's page.</param>
+    /// <returns></returns>
     public static SPageFormat Custom(SMeasure width, SMeasure height) {
         return new SPageFormat(width, height);
     }

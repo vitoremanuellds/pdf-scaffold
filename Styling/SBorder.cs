@@ -8,7 +8,7 @@ public class SBorder(
     Color? color = null,
     bool visible = false,
     SMeasure? distanceFromContent = null,
-    BorderType? borderType = null
+    SBorderType? borderType = null
 )
 {
 
@@ -16,6 +16,6 @@ public class SBorder(
     public Color? Color { get; } = color;
     public bool Visible { get; } = visible;
     public SMeasure? DistanceFromContent { get; } = distanceFromContent;
-    public BorderType? BorderType { get; } = borderType;
+    public SBorderType? BorderType { get; } = borderType;
 
 }

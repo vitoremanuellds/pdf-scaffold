@@ -3,13 +3,14 @@ using PDFScaffold.Styling;
 
 namespace PDFScaffold.Layout;
 
-public class Container(
+public class SColumn(
     SStyle? style = null,
     string? useStyle = null,
     bool? singlePage = false,
-    SSectionElement? content = null
+    ICollection<SSectionElement>? elements = null
 ) : SSectionElement(style, useStyle) {
 
     public bool? SinglePage { get; } = singlePage;
-    public SSectionElement? Content { get; } = content;
+    public ICollection<SSectionElement>? Elements { get; } = elements;
+
 }

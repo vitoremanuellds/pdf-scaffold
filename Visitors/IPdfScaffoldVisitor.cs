@@ -10,16 +10,16 @@ public interface IPdfScaffoldVisitor {
 
     void ForDocument(SDocument document); //
     void ForSection(SSection section); //
-    void ForImage(Image image);
-    void ForColumn(Column column);
-    void ForContainer(Container container);
-    void ForRow(Row row);
-    void ForTable(Table table);
-    void ForTableCell(TableCell tableCell);
-    void ForTableRow(TableRow tableRow);
-    void ForBookmark(Bookmark bookmark);
-    void ForHeading(Heading heading);
-    void ForLink(Link link);
-    void ForParagraph(Paragraph paragraph);
-    void ForText(Text text);
+    void ForImage(SImage image);
+    void ForColumn(SColumn column);
+    void ForContainer(SContainer container);
+    void ForRow(SRow row);
+    void ForTable(STable table);
+    void ForTableCell(STableCell tableCell);
+    void ForTableRow(STableRow tableRow);
+    void ForBookmark(SBookmark bookmark);
+    void ForHeading(SHeading heading);
+    void ForLink(SLink link);
+    void ForParagraph(SParagraph paragraph);
+    void ForText(SText text);
 }

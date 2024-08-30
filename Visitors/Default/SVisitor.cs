@@ -1,22 +1,25 @@
+using MigraDoc.DocumentObjectModel;
 using PDFScaffold.Images;
 using PDFScaffold.Layout;
 using PDFScaffold.Scaffold;
+using PDFScaffold.Styling;
 using PDFScaffold.Tables;
 using PDFScaffold.Texts;
 
 namespace PDFScaffold.Visitors.Default;
 
-public class Visitor : IPdfScaffoldVisitor
+public class SVisitor : IPdfScaffoldVisitor
 {
-    public required MigraDoc.DocumentObjectModel.Document Document { get; set; }
-    internal Dictionary<string, Styling.Style> Styles { get; set; } = [];
+    public required Document Document { get; set; }
+    internal Dictionary<string, SStyle> Styles { get; set; } = [];
+    internal Stack<object> VisitedObjects { get; } = new Stack<object>();
 
-    public void ForDocument(Document document)
+    public void ForDocument(SDocument document)
     {
         this.DoForDocument(document);
     }
 
-    internal Styling.Style? GetStyle(Styling.Style? style, string? name) {
+    internal SStyle? GetStyle(SStyle? style, string? name) {
         if (style == null && name != null) {
             var exists = Styles.TryGetValue(name, out style);
             if (!exists) {
@@ -26,66 +29,66 @@ public class Visitor : IPdfScaffoldVisitor
         return style;
     }
 
-    public void ForSection(Section section) {
+    public void ForSection(SSection section) {
         this.DoForSection(section);
     }
 
-    public void ForImage(Image image)
+    public void ForImage(SImage image)
     {
         this.DoForImage(image);
     }
 
-    public void ForColumn(Column column)
+    public void ForColumn(SColumn column)
     {
         throw new NotImplementedException();
     }
 
-    public void ForContainer(Container container)
+    public void ForContainer(SContainer container)
     {
         throw new NotImplementedException();
     }
 
-    public void ForRow(Row row)
+    public void ForRow(SRow row)
     {
         throw new NotImplementedException();
     }
 
-    public void ForTable(Table table)
+    public void ForTable(STable table)
     {
         throw new NotImplementedException();
     }
 
-    public void ForTableCell(TableCell tableCell)
+    public void ForTableCell(STableCell tableCell)
     {
         throw new NotImplementedException();
     }
 
-    public void ForTableRow(TableRow tableRow)
+    public void ForTableRow(STableRow tableRow)
     {
         throw new NotImplementedException();
     }
 
-    public void ForBookmark(Bookmark bookmark)
+    public void ForBookmark(SBookmark bookmark)
     {
         throw new NotImplementedException();
     }
 
-    public void ForHeading(Heading heading)
+    public void ForHeading(SHeading heading)
     {
         throw new NotImplementedException();
     }
 
-    public void ForLink(Link link)
+    public void ForLink(SLink link)
     {
         throw new NotImplementedException();
     }
 
-    public void ForParagraph(Texts.Paragraph paragraph)
+    public void ForParagraph(SParagraph paragraph)
     {
         throw new NotImplementedException();
     }
 
-    public void ForText(Texts.Text text)
+    public void ForText(SText text)
     {
         throw new NotImplementedException();
     }
