@@ -49,4 +49,16 @@ public class SMargin {
     public static SMargin Symmetrical(SMeasure? leftAndRight = null, SMeasure? topAndBottom = null) {
         return new SMargin(leftAndRight, leftAndRight, topAndBottom, topAndBottom);
     }
+
+    /// <summary>
+    /// Creates an SMargin with values for each side.
+    /// </summary>
+    /// <param name="left">The size of the left margin.</param>
+    /// <param name="right">The size of the right margin.</param>
+    /// <param name="top">The size of the top margin.</param>
+    /// <param name="bottom">The size of the bottom margin.</param>
+    /// <returns>An SMargin with values for each side.</returns>
+    public static SMargin Each(SMeasure? left = null, SMeasure? right = null, SMeasure? top = null, SMeasure? bottom = null) {
+        return new SMargin(left, right, top, bottom);
+    }
 }
