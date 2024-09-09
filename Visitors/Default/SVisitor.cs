@@ -40,17 +40,17 @@ public class SVisitor : IPdfScaffoldVisitor
 
     public void ForColumn(SColumn column)
     {
-        throw new NotImplementedException();
+        this.DoForColumn(column);
     }
 
     public void ForContainer(SContainer container)
     {
-        throw new NotImplementedException();
+        this.DoForContainer(container);
     }
 
     public void ForRow(SRow row)
     {
-        throw new NotImplementedException();
+        this.DoForRow(row);
     }
 
     public void ForTable(STable table)
@@ -68,10 +68,10 @@ public class SVisitor : IPdfScaffoldVisitor
         throw new NotImplementedException();
     }
 
-    public void ForBookmark(SBookmark bookmark)
-    {
-        throw new NotImplementedException();
-    }
+    // public void ForBookmark(SBookmark bookmark)
+    // {
+    //     throw new NotImplementedException();
+    // }
 
     public void ForHeading(SHeading heading)
     {

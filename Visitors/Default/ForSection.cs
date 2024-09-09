@@ -52,6 +52,7 @@ internal static class ForSection {
         foreach (SSectionElement element in elements) {
             element.FathersStyle = style;
             element.Accept(visitor);
+            // element.GetType().GetMethod("Accept")!.Invoke(element, [visitor]);
         }
 
         visitor.VisitedObjects.Pop();

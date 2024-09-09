@@ -25,9 +25,10 @@ public abstract class SSectionElement(SStyle? style, string? useStyle, string? n
     /// An unique name to be referenced by a link. If not set, the element can not be referenced by a link.
     /// </summary>
     public string? Name { get; } = name;
+    internal (int, int) TablePos { get; set; } = (-1, -1);
 
-    public void Accept(IPdfScaffoldVisitor visitor)
-    {
-        throw new Exception("This method should not be called by the super class!");
-    }
+    public abstract void Accept(IPdfScaffoldVisitor visitor);
+    // {
+    //     throw new Exception("This method should not be called by the super class!");
+    // }
 }

@@ -1,5 +1,6 @@
 using MigraDoc.DocumentObjectModel;
 using PDFScaffold.Styling;
+using PDFScaffold.Visitors;
 
 namespace PDFScaffold.Texts;
 
@@ -13,4 +14,13 @@ public class SText (
     public string? Value { get; } = value;
     public bool BreakLine { get; } = breakLine;
 
+    // public void Accept(IPdfScaffoldVisitor visitor)
+    // {
+    //     visitor.ForText(this);
+    // }
+
+    public override void Accept(IPdfScaffoldVisitor visitor)
+    {
+        visitor.ForText(this);
+    }
 }

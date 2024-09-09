@@ -1,5 +1,7 @@
 using PDFScaffold.Scaffold;
 using PDFScaffold.Styling;
+using PDFScaffold.Visitors;
+using PDFScaffold.Visitors.Default;
 
 namespace PDFScaffold.Layout;
 
@@ -43,7 +45,22 @@ public class SColumn(
             r += d.Item2;
         }
 
+        int initPos = RowSpan.Item1;
+        int length = RowSpan.Item2; 
+
+        for (int i = initPos; i < initPos + length; i++)
+        {
+            SSectionElement e = Elements.ElementAt(i);
+            if (!(e is SColumn || e is SRow)) {
+                e.TablePos = (ColSpan.Item1, i);
+            }
+        }
+
         return (columns, lines);
     }
 
+    public override void Accept(IPdfScaffoldVisitor visitor)
+    {
+        visitor.ForColumn(this);
+    }
 }

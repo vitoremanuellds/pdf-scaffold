@@ -1,5 +1,6 @@
 using MigraDoc.DocumentObjectModel;
 using MigraDoc.DocumentObjectModel.Shapes;
+using MigraDoc.DocumentObjectModel.Tables;
 using PDFScaffold.Images;
 using PDFScaffold.Metrics;
 using PDFScaffold.Scaffold;
@@ -19,8 +20,10 @@ internal static class ForImage {
 
         if (father != null && father is Section section) {
             mdImage = section.AddImage(image.Path);
+        } else if (father is Table table) {
+            mdImage = table.Rows[image.TablePos.Item2].Cells[image.TablePos.Item1].AddImage(image.Path);
         } else {
-            throw new Exception("An SImage can not be used outside a Section");
+            throw new Exception("An SImage can not be used outside a SSection or an SColumn/SRow");
         }
 
         var x = image.FathersStyle?.Dimensions?.X;

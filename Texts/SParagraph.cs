@@ -1,5 +1,6 @@
 using PDFScaffold.Scaffold;
 using PDFScaffold.Styling;
+using PDFScaffold.Visitors;
 
 namespace PDFScaffold.Texts;
 
@@ -10,4 +11,9 @@ public class SParagraph(
     ICollection<STextElement>? content = null
 ) : SSectionElement(style, useStyle, name) {
     public ICollection<STextElement>? Content { get; } = content;
+
+    public override void Accept(IPdfScaffoldVisitor visitor)
+    {
+        visitor.ForParagraph(this);
+    }
 }

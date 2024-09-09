@@ -9,7 +9,7 @@ namespace PDFScaffold.Visitors.Default;
 
 public static class ForContainer {
 
-    public static void DoForContainer(this SContainer container, SVisitor visitor) {
+    public static void DoForContainer(this SVisitor visitor, SContainer container) {
         SStyle style = visitor.GetStyle(container.Style, container.UseStyle) ?? new SStyle();
         style.Merge(container.FathersStyle);
 
@@ -74,6 +74,7 @@ public static class ForContainer {
         visitor.VisitedObjects.Push(textFrame);
 
         container.Content.FathersStyle = style;
+        // container.Content.GetType().GetMethod("Accept")!.Invoke(container.Content, [visitor]);
         container.Content.Accept(visitor);
 
         if (style.Centered ?? false) {

@@ -1,5 +1,6 @@
 using PDFScaffold.Scaffold;
 using PDFScaffold.Styling;
+using PDFScaffold.Visitors;
 
 namespace PDFScaffold.Texts;
 
@@ -15,4 +16,8 @@ public class SLink(
     public string? Value { get; } = value;
     public bool BreakLine { get; } = breakLine;
 
+    public override void Accept(IPdfScaffoldVisitor visitor)
+    {
+        visitor.ForLink(this);
+    }
 }

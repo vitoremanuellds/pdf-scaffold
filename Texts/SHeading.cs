@@ -8,7 +8,7 @@ public class SHeading(
     string? useStyle = null,
     string? name = null,
     ICollection<STextElement>? content = null
-    ) : SParagraph(style, useStyle, content) {
+    ) : SParagraph(style, useStyle, name, content) {
 
     public int? Level { get; } = level;
 }

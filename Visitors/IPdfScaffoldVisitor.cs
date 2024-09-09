@@ -17,7 +17,7 @@ public interface IPdfScaffoldVisitor {
     void ForTable(STable table);
     void ForTableCell(STableCell tableCell);
     void ForTableRow(STableRow tableRow);
-    void ForBookmark(SBookmark bookmark);
+    // void ForBookmark(SBookmark bookmark);
     void ForHeading(SHeading heading);
     void ForLink(SLink link);
     void ForParagraph(SParagraph paragraph);

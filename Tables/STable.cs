@@ -1,6 +1,7 @@
 using PDFScaffold.Metrics;
 using PDFScaffold.Scaffold;
 using PDFScaffold.Styling;
+using PDFScaffold.Visitors;
 
 namespace PDFScaffold.Tables;
 
@@ -14,4 +15,9 @@ public class STable(
     
     public ICollection<SMeasure>? ColumnSizes { get; } = columnSizes;
     public ICollection<STableRow>? Rows { get; } = rows;
+
+    public override void Accept(IPdfScaffoldVisitor visitor)
+    {
+        visitor.ForTable(this);
+    }
 }

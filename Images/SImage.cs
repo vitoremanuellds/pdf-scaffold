@@ -16,7 +16,7 @@ public class SImage(
     public string Path { get; } = path;
     public SCrop? CropImage { get; } = cropImage;
 
-    public new void Accept(IPdfScaffoldVisitor visitor)
+    public override void Accept(IPdfScaffoldVisitor visitor)
     {
         visitor.ForImage(this);
     }

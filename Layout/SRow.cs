@@ -1,5 +1,6 @@
 using PDFScaffold.Scaffold;
 using PDFScaffold.Styling;
+using PDFScaffold.Visitors;
 
 namespace PDFScaffold.Layout;
 
@@ -15,6 +16,11 @@ public class SRow(
     public ICollection<SSectionElement> Elements { get; } = elements;
     internal (int, int) ColSpan {get; set;} = (0, 0);
     internal (int, int) RowSpan {get; set;} = (0, 0);
+
+    public override void Accept(IPdfScaffoldVisitor visitor)
+    {
+        visitor.ForRow(this);
+    }
 
     internal (int, int) Dimensions() {
         int columns = 0;
@@ -41,6 +47,17 @@ public class SRow(
             columns += d.Item1;
             lines = Math.Max(lines, d.Item2);
             c += d.Item1;
+        }
+
+        int initPos = ColSpan.Item1;
+        int length = ColSpan.Item2; 
+
+        for (int i = initPos; i < initPos + length; i++)
+        {
+            SSectionElement e = Elements.ElementAt(i);
+            if (!(e is SColumn || e is SRow)) {
+                e.TablePos = (i, RowSpan.Item1);
+            }
         }
 
         return (columns, lines);

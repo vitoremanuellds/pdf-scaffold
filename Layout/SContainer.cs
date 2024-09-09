@@ -22,7 +22,7 @@ public class SContainer(
     public bool? SinglePage { get; } = singlePage;
     public SSectionElement Content { get; } = content;
 
-    public new void Accept(IPdfScaffoldVisitor visitor) {
+    public override void Accept(IPdfScaffoldVisitor visitor) {
         visitor.ForContainer(this);
     }
 }
