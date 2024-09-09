@@ -9,8 +9,9 @@ public class SImage(
     string path,
     SStyle? style = null,
     string? useStyle = null,
+    string? name = null,
     SCrop? cropImage = null
-) : SSectionElement(style, useStyle), IPdfScaffoldElement {
+) : SSectionElement(style, useStyle, name), IPdfScaffoldElement {
 
     public string Path { get; } = path;
     public SCrop? CropImage { get; } = cropImage;

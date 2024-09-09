@@ -8,7 +8,8 @@ namespace PDFScaffold.Scaffold;
 /// </summary>
 /// <param name="style">The style of the SSection Element.</param>
 /// <param name="useStyle">A reference to a style inside the SDocument's style list.</param>
-public abstract class SSectionElement(SStyle? style, string? useStyle) : IPdfScaffoldElement {
+/// <param name="name">An unique name to be referenced by a link. If not set, the element can not be referenced by a link.</param>
+public abstract class SSectionElement(SStyle? style, string? useStyle, string? name) : IPdfScaffoldElement {
 
     internal SStyle? FathersStyle { get; set; }
     /// <summary>
@@ -19,6 +20,11 @@ public abstract class SSectionElement(SStyle? style, string? useStyle) : IPdfSca
     /// A reference to a style inside the SDocument's style list.
     /// </summary>
     public string? UseStyle { get; } = useStyle;
+
+    /// <summary>
+    /// An unique name to be referenced by a link. If not set, the element can not be referenced by a link.
+    /// </summary>
+    public string? Name { get; } = name;
 
     public void Accept(IPdfScaffoldVisitor visitor)
     {

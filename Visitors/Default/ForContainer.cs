@@ -76,6 +76,17 @@ public static class ForContainer {
         container.Content.FathersStyle = style;
         container.Content.Accept(visitor);
 
+        if (style.Centered ?? false) {
+            double sonX = container.Content.Style!.Dimensions!.X;
+            double sonY = container.Content.Style!.Dimensions!.Y;
+            double horizontalMargins = (availableSpace.X - sonX) / 2;
+            double verticalMargins = (availableSpace.Y - sonY) / 2;
+            textFrame.MarginLeft = Unit.FromPoint(horizontalMargins);
+            textFrame.MarginRight = Unit.FromPoint(horizontalMargins);
+            textFrame.MarginTop = Unit.FromPoint(verticalMargins);
+            textFrame.MarginBottom = Unit.FromPoint(verticalMargins);
+        }
+
         visitor.VisitedObjects.Pop();
     }
 }

@@ -15,8 +15,9 @@ public class SContainer(
     SSectionElement content,
     SStyle? style = null,
     string? useStyle = null,
+    string? name = null,
     bool? singlePage = false
-) : SSectionElement(style, useStyle) {
+) : SSectionElement(style, useStyle, name) {
 
     public bool? SinglePage { get; } = singlePage;
     public SSectionElement Content { get; } = content;
