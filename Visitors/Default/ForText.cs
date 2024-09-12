@@ -1,6 +1,7 @@
 using MigraDoc.DocumentObjectModel;
 using MigraDoc.DocumentObjectModel.Shapes;
 using MigraDoc.DocumentObjectModel.Tables;
+using PDFScaffold.Metrics;
 using PDFScaffold.Styling;
 using PDFScaffold.Texts;
 
@@ -30,7 +31,35 @@ public static class ForText {
             p.AddBookmark(paragraph.Name);
         }
 
-        
+
+
+        // p.Format;
+        p.Format.Font.Color = style.FontColor ?? Colors.Black;
+        p.Format.Font.Bold = style.Bold ?? false;
+        p.Format.Font.Italic = style.Italic ?? false;
+        p.Format.Font.Underline = SUnderlineUtils.GetUnderline(style.Underline ?? SUnderline.None);
+        p.Format.Font.Size = SMetricsUtil.GetUnitValue(style.FontSize, paragraph.FathersStyle!.Dimensions!.Y);
+        p.Format.Font.Subscript = (style.Subscript ?? false) && !(style.Superscript ?? false);
+        p.Format.Font.Superscript = (style.Superscript ?? false) && !(style.Subscript ?? false);
+        p.Format.Shading.Color = style.Shading ?? Color.Empty;
+        switch (style.HorizontalAlignment)
+        {
+            case SAlignment.Start:
+                p.Format.Alignment = ParagraphAlignment.Left;
+                break;
+            case SAlignment.Center:
+                p.Format.Alignment = ParagraphAlignment.Center;
+                break;
+            case SAlignment.End:
+                p.Format.Alignment = ParagraphAlignment.Right;
+                break;
+            case SAlignment.Justified:
+                p.Format.Alignment = ParagraphAlignment.Justify;
+                break;
+            case null:
+                p.Format.Alignment = ParagraphAlignment.Left;
+
+        }
 
         visitor.VisitedObjects.Push(p);
 
