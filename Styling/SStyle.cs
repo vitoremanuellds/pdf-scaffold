@@ -49,7 +49,7 @@ public class SStyle(
     SBorders? borders = null,
     SPositionType? positionType = null,
     SPadding? padding = null,
-    ICollection<STabStop>? tabstops = null,
+    // ICollection<STabStop>? tabstops = null,
     SMargin? margin = null,
     bool? centered = null
 ) {
@@ -74,7 +74,7 @@ public class SStyle(
     public SBorders? Borders { get; } = borders;
     public SPositionType? PositionType { get; } = positionType;
     public SPadding? Padding { get; } = padding;
-    public ICollection<STabStop>? Tabstops { get; } = tabstops;
+    // public ICollection<STabStop>? Tabstops { get; } = tabstops;
     public SMargin? Margin { get; } = margin;
     public bool? Centered { get; } = centered;
 
@@ -99,7 +99,7 @@ public class SStyle(
             Borders ?? style?.Borders,
             PositionType ?? style?.PositionType,
             Padding,
-            Tabstops ?? style?.Tabstops,
+            // Tabstops ?? style?.Tabstops,
             Margin,
             Centered
         );

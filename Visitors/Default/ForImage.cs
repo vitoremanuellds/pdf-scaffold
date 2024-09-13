@@ -22,8 +22,10 @@ internal static class ForImage {
             mdImage = section.AddImage(image.Path);
         } else if (father is Table table) {
             mdImage = table.Rows[image.TablePos.Item2].Cells[image.TablePos.Item1].AddImage(image.Path);
+        } else if (father is TextFrame textFrame) {
+            mdImage = textFrame.AddImage(image.Path);
         } else {
-            throw new Exception("An SImage can not be used outside a SSection or an SColumn/SRow");
+            throw new Exception("An SImage can not be used outside a SSection or an SColumn/SRow/SContainer");
         }
 
         var x = image.FathersStyle?.Dimensions?.X;

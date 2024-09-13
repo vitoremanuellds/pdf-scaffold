@@ -85,11 +85,11 @@ public class SVisitor : IPdfScaffoldVisitor
 
     public void ForParagraph(SParagraph paragraph)
     {
-        throw new NotImplementedException();
+        this.DoForParagraph(paragraph);
     }
 
     public void ForText(SText text)
     {
-        throw new NotImplementedException();
+        this.DoForText(text);
     }
 }

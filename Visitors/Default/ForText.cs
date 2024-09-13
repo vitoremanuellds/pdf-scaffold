@@ -28,7 +28,7 @@ public static class ForText {
         }
 
         if (paragraph.Name != null) {
-            p.AddBookmark(paragraph.Name);
+            p.AddBookmark('#' + paragraph.Name);
         }
 
         // p.Format;
@@ -60,23 +60,135 @@ public static class ForText {
             SetBorders(paragraph, p, style);
         }
 
-        // if (style.Padding != null) {
-        //     p.Format.
-        // }
-
         visitor.VisitedObjects.Push(p);
 
         foreach (STextElement item in paragraph.Content ?? [])
         {
-            item.FatherStyle = style;
+            item.FathersStyle = style;
             item.Accept(visitor);
         }
 
         visitor.VisitedObjects.Pop();
     }
 
-    private static void DoForText(this SVisitor visitor, SText text) {
+    public static void DoForText(this SVisitor visitor, SText text) {
+        SStyle style = visitor.GetStyle(text.Style, text.UseStyle) ?? new SStyle();
+        style.Merge(text.FathersStyle);
+
+        var father = visitor.VisitedObjects.Peek();
+
+        FormattedText t;
+
+        if (father is Paragraph paragraph) {
+            t = paragraph.AddFormattedText(text.Value ?? "");
+            if (text.BreakLine) {
+                paragraph.AddText("\n");
+            }
+            if (text.Name != null) {
+                t.AddBookmark('#' + text.Name!, false);
+            }
+        } else {
+            throw new Exception("An SText can be inside only an SParagraph!");
+        }
+
         
+
+        t.Bold = style.Bold ?? false;
+        t.Italic = style.Italic ?? false;
+        t.Color = style.FontColor ?? Colors.Black;
+        switch(style.Underline) {
+            case SUnderline.None:
+                t.Underline = Underline.None;
+                break;
+            case SUnderline.Dash:
+                t.Underline = Underline.Dash;
+                break;
+            case SUnderline.DotDash:
+                t.Underline = Underline.DotDash;
+                break;
+            case SUnderline.DotDotDash:
+                t.Underline = Underline.DotDotDash;
+                break;
+            case SUnderline.Dotted:
+                t.Underline = Underline.Dotted;
+                break;
+            case SUnderline.Single:
+                t.Underline = Underline.Single;
+                break;
+            case SUnderline.OnWords:
+                t.Underline = Underline.Words;
+                break;
+        }
+
+        t.Size = SMetricsUtil.GetUnitValue(style.FontSize, text.FathersStyle!.Dimensions!.X);
+        t.Subscript = (style.Subscript ?? false) && !(style.Superscript ?? false);
+        t.Superscript = (style.Superscript ?? false) && !(style.Subscript ?? false);
+    }
+
+
+    public static void DoForLink(this SVisitor visitor, SLink link) {
+        SStyle style = visitor.GetStyle(link.Style, link.UseStyle) ?? new SStyle();
+        style.Merge(link.FathersStyle);
+
+        var father = visitor.VisitedObjects.Peek();
+
+        Hyperlink l;
+
+        if (father is Paragraph paragraph) {
+            bool isBookmarkLink = link.Link[0] == '#';
+
+            if (isBookmarkLink) {
+                l = paragraph.AddHyperlink(link.Link);
+            }
+            else {
+                l = paragraph.AddWebLink(link.Link);
+            }
+
+            if (link.Name != null) {
+                l.AddBookmark('#' + l.Name!, false);
+            }
+        } else {
+            throw new Exception("An SText can be inside only an SParagraph!");
+        }
+
+        if (link.Text != null) {
+            FormattedText t = l.AddFormattedText();
+
+            if (link.BreakLine) {
+                l.AddText("\n");
+            }
+
+            t.Bold = style.Bold ?? false;
+            t.Italic = style.Italic ?? false;
+            t.Color = style.FontColor ?? Colors.Black;
+            switch(style.Underline) {
+                case SUnderline.None:
+                    t.Underline = Underline.None;
+                    break;
+                case SUnderline.Dash:
+                    t.Underline = Underline.Dash;
+                    break;
+                case SUnderline.DotDash:
+                    t.Underline = Underline.DotDash;
+                    break;
+                case SUnderline.DotDotDash:
+                    t.Underline = Underline.DotDotDash;
+                    break;
+                case SUnderline.Dotted:
+                    t.Underline = Underline.Dotted;
+                    break;
+                case SUnderline.Single:
+                    t.Underline = Underline.Single;
+                    break;
+                case SUnderline.OnWords:
+                    t.Underline = Underline.Words;
+                    break;
+            }
+
+            t.Size = SMetricsUtil.GetUnitValue(style.FontSize, link.FathersStyle!.Dimensions!.X);
+            t.Subscript = (style.Subscript ?? false) && !(style.Superscript ?? false);
+            t.Superscript = (style.Superscript ?? false) && !(style.Subscript ?? false);
+        }
     }
 
 

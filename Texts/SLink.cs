@@ -5,15 +5,16 @@ using PDFScaffold.Visitors;
 namespace PDFScaffold.Texts;
 
 public class SLink(
+    string link,
     string? text = null,
-    string? value = null,
     SStyle? style = null,
     string? useStyle = null,
+    string? name = null,
     bool breakLine = false
-) : STextElement(style, useStyle) {
+) : STextElement(style, useStyle, name) {
     
     public string? Text { get; } = text;
-    public string? Value { get; } = value;
+    public string Link { get; } = link;
     public bool BreakLine { get; } = breakLine;
 
     public override void Accept(IPdfScaffoldVisitor visitor)
