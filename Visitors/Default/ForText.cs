@@ -31,8 +31,6 @@ public static class ForText {
             p.AddBookmark(paragraph.Name);
         }
 
-
-
         // p.Format;
         p.Format.Font.Color = style.FontColor ?? Colors.Black;
         p.Format.Font.Bold = style.Bold ?? false;
@@ -56,10 +54,15 @@ public static class ForText {
             case SAlignment.Justified:
                 p.Format.Alignment = ParagraphAlignment.Justify;
                 break;
-            case null:
-                p.Format.Alignment = ParagraphAlignment.Left;
-
         }
+
+        if (style.Borders != null) {
+            SetBorders(paragraph, p, style);
+        }
+
+        // if (style.Padding != null) {
+        //     p.Format.
+        // }
 
         visitor.VisitedObjects.Push(p);
 
@@ -70,5 +73,63 @@ public static class ForText {
         }
 
         visitor.VisitedObjects.Pop();
+    }
+
+    private static void DoForText(this SVisitor visitor, SText text) {
+        
+    }
+
+
+    private static void SetBorders(SParagraph paragraph, Paragraph p, SStyle style) {
+        if (style.Borders!.Left != null) {
+            SetBorder(paragraph, style.Borders.Left, p.Format.Borders.Left, true);
+        }
+
+        if (style.Borders!.Right != null) {
+            SetBorder(paragraph, style.Borders.Right, p.Format.Borders.Right, true);
+        }
+
+        if (style.Borders!.Bottom != null) {
+            SetBorder(paragraph, style.Borders.Bottom, p.Format.Borders.Bottom, false);
+        }
+
+        if (style.Borders!.Top != null) {
+            SetBorder(paragraph, style.Borders.Top, p.Format.Borders.Top, false);
+        }
+    }
+
+    private static void SetBorder(
+        SParagraph paragraph, 
+        SBorder border, 
+        Border b,
+        bool horizontal
+    ) {
+        b.Color = border.Color ?? Colors.Black;
+        switch (border.BorderType) {
+            case SBorderType.None:
+                b.Style = BorderStyle.None;
+                break;
+            case SBorderType.Single:
+                b.Style = BorderStyle.Single;
+                break;
+            case SBorderType.Dot:
+                b.Style = BorderStyle.Dot;
+                break;
+            case SBorderType.DashDot:
+                b.Style = BorderStyle.DashDot;
+                break;
+            case SBorderType.DashDotDot:
+                b.Style = BorderStyle.DashDotDot;
+                break;
+            case SBorderType.DashLargeGap:
+                b.Style = BorderStyle.DashLargeGap;
+                break;
+            case SBorderType.DashSmallGap:
+                b.Style = BorderStyle.DashSmallGap;
+                break;
+        }
+        b.Visible = border.Visible ?? false;
+        SDimensions d = paragraph.FathersStyle!.Dimensions!;
+        b.Width = SMetricsUtil.GetUnitValue(border.Width, horizontal ? d.X : d.Y);
     }
 }

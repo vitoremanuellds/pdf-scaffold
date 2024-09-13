@@ -8,22 +8,22 @@ namespace PDFScaffold.Styling;
 /// Represents the style of a component inside the SDocument.
 /// </summary>
 /// <param name="name">The name of the style used to be referenced inside the SDocument.</param>
-/// <param name="fontColor">The color of the font used in the component. It is applied to SText and SLink.</param>
-/// <param name="bold">If true, the font will be bold inside the component. It is applied to SText and Slink.</param>
-/// <param name="italic">If true, the font will be italic inside the component. It is applied to SText and Slink.</param>
-/// <param name="underline">An SUnderline used to define the underline of the text inside the component. It is applied to SText and Slink.</param>
-/// <param name="fontSize">The size of the font inside the component. It is applied to SText and Slink.</param>
-/// <param name="superscript">If true, the text inside the component will be superscript. Only works if <paramref name="subscript"> is false. It is applied to SText and Slink.</param>
-/// <param name="subscript">If true, the text inside the component will be subscript. Only works if <paramref name="superscript"> is false. It is applied to SText and Slink.</param>
-/// <param name="shading">The color of the background inside the component. It is applied to SContainer.</param>
+/// <param name="fontColor">The color of the font used in the component. It is applied to SParagraph, SText and SLink.</param>
+/// <param name="bold">If true, the font will be bold inside the component. It is applied to SParagraph, SText and Slink.</param>
+/// <param name="italic">If true, the font will be italic inside the component. It is applied to SParagraph, SText and Slink.</param>
+/// <param name="underline">An SUnderline used to define the underline of the text inside the component. It is applied to SParagraph, SText and Slink.</param>
+/// <param name="fontSize">The size of the font inside the component. It is applied to SParagraph, SText and Slink.</param>
+/// <param name="superscript">If true, the text inside the component will be superscript. Only works if <paramref name="subscript"> is false. It is applied to SParagraph, SText and Slink.</param>
+/// <param name="subscript">If true, the text inside the component will be subscript. Only works if <paramref name="superscript"> is false. It is applied to SParagraph, SText and Slink.</param>
+/// <param name="shading">The color of the background inside the component. It is applied to SContainer and SParagraph.</param>
 /// <param name="width">The width of the whole component. It is applied to SImage, SContainer. This value is only applied on the current component.</param>
 /// <param name="height">The height of the whole component. It is applied to SImage, SContainer. This value is only applied on the current component.</param>
 /// <param name="topPosition"></param>
 /// <param name="leftPosition"></param>
 /// <param name="resolution"></param>
 /// <param name="verticalAlignment"></param>
-/// <param name="horizontalAlignment"></param>
-/// <param name="borders">The style of the component's borders. It is applied to SContainer, SImage. In SContainer and SImage, only the Left Border is used to configure the whole border of the component.</param>
+/// <param name="horizontalAlignment">The alignment of the component(s). It is applied to SParagraph.</param>
+/// <param name="borders">The style of the component's borders. It is applied to SContainer, SImage and SParagraph. In SContainer and SImage, only the Left Border is used to configure the whole border of the component.</param>
 /// <param name="positionType"></param>
 /// <param name="padding">The style of the component's padding. It is applied to.</param>
 /// <param name="tabstops"></param>
