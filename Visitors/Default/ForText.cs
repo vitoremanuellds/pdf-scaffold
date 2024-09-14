@@ -36,7 +36,10 @@ public static class ForText {
         p.Format.Font.Bold = style.Bold ?? false;
         p.Format.Font.Italic = style.Italic ?? false;
         p.Format.Font.Underline = SUnderlineUtils.GetUnderline(style.Underline ?? SUnderline.None);
-        p.Format.Font.Size = SMetricsUtil.GetUnitValue(style.FontSize, paragraph.FathersStyle!.Dimensions!.Y);
+        if (style.FontSize != null)
+        {
+            p.Format.Font.Size = SMetricsUtil.GetUnitValue(style.FontSize, paragraph.FathersStyle!.Dimensions!.Y);
+        }
         p.Format.Font.Subscript = (style.Subscript ?? false) && !(style.Superscript ?? false);
         p.Format.Font.Superscript = (style.Superscript ?? false) && !(style.Subscript ?? false);
         p.Format.Shading.Color = style.Shading ?? Color.Empty;
@@ -61,6 +64,7 @@ public static class ForText {
         }
 
         visitor.VisitedObjects.Push(p);
+        style.Dimensions = paragraph.FathersStyle!.Dimensions;
 
         foreach (STextElement item in paragraph.Content ?? [])
         {
@@ -91,8 +95,6 @@ public static class ForText {
             throw new Exception("An SText can be inside only an SParagraph!");
         }
 
-        
-
         t.Bold = style.Bold ?? false;
         t.Italic = style.Italic ?? false;
         t.Color = style.FontColor ?? Colors.Black;
@@ -120,7 +122,10 @@ public static class ForText {
                 break;
         }
 
-        t.Size = SMetricsUtil.GetUnitValue(style.FontSize, text.FathersStyle!.Dimensions!.X);
+        if (style.FontSize != null)
+        {
+            t.Size = SMetricsUtil.GetUnitValue(style.FontSize, text.FathersStyle!.Dimensions!.X);
+        }
         t.Subscript = (style.Subscript ?? false) && !(style.Superscript ?? false);
         t.Superscript = (style.Superscript ?? false) && !(style.Subscript ?? false);
     }
@@ -185,7 +190,10 @@ public static class ForText {
                     break;
             }
 
-            t.Size = SMetricsUtil.GetUnitValue(style.FontSize, link.FathersStyle!.Dimensions!.X);
+            if (style.FontSize != null)
+            {
+                t.Size = SMetricsUtil.GetUnitValue(style.FontSize, link.FathersStyle!.Dimensions!.X);
+            }
             t.Subscript = (style.Subscript ?? false) && !(style.Superscript ?? false);
             t.Superscript = (style.Superscript ?? false) && !(style.Subscript ?? false);
         }
@@ -193,21 +201,27 @@ public static class ForText {
 
 
     private static void SetBorders(SParagraph paragraph, Paragraph p, SStyle style) {
+        SDimensions d = paragraph.FathersStyle!.Dimensions!;
         if (style.Borders!.Left != null) {
             SetBorder(paragraph, style.Borders.Left, p.Format.Borders.Left, true);
+            p.Format.Borders.DistanceFromLeft = SMetricsUtil.GetUnitValue(style.Borders.Left.DistanceFromContent ?? new SMeasure(0), d.X);
         }
 
         if (style.Borders!.Right != null) {
             SetBorder(paragraph, style.Borders.Right, p.Format.Borders.Right, true);
+            p.Format.Borders.DistanceFromRight = SMetricsUtil.GetUnitValue(style.Borders.Right.DistanceFromContent ?? new SMeasure(0), d.X);
         }
 
         if (style.Borders!.Bottom != null) {
             SetBorder(paragraph, style.Borders.Bottom, p.Format.Borders.Bottom, false);
+            p.Format.Borders.DistanceFromBottom = SMetricsUtil.GetUnitValue(style.Borders.Bottom.DistanceFromContent ?? new SMeasure(0), d.Y);
         }
 
         if (style.Borders!.Top != null) {
             SetBorder(paragraph, style.Borders.Top, p.Format.Borders.Top, false);
+            p.Format.Borders.DistanceFromTop = SMetricsUtil.GetUnitValue(style.Borders.Top.DistanceFromContent ?? new SMeasure(0), d.Y);
         }
+
     }
 
     private static void SetBorder(
@@ -242,6 +256,6 @@ public static class ForText {
         }
         b.Visible = border.Visible ?? false;
         SDimensions d = paragraph.FathersStyle!.Dimensions!;
-        b.Width = SMetricsUtil.GetUnitValue(border.Width, horizontal ? d.X : d.Y);
+        b.Width = border.Width != null ? SMetricsUtil.GetUnitValue(border.Width, horizontal ? d.X : d.Y) : Unit.FromPoint(1);
     }
 }

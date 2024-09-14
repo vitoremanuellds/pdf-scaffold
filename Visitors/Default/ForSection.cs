@@ -25,10 +25,10 @@ internal static class ForSection {
         var width = pageFormat!.Width.Value;                        
         var height = pageFormat!.Height.Value;
 
-        var left = margin.Left ?? new SMeasure(inches: 1);
-        var right = margin.Right ?? new SMeasure(inches: 1);
-        var top = margin.Top ?? new SMeasure(inches: 1);
-        var bottom = margin.Bottom ?? new SMeasure(inches: 1);
+        var left = margin.Left ?? new SMeasure(inches: 0);
+        var right = margin.Right ?? new SMeasure(inches: 0);
+        var top = margin.Top ?? new SMeasure(inches: 0);
+        var bottom = margin.Bottom ?? new SMeasure(inches: 0);
 
         // Setting to null, I don't know if this is going to work.
         sec.PageSetup.LeftMargin = SMetricsUtil.GetUnitValue(left, width);

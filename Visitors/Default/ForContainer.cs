@@ -59,16 +59,16 @@ public static class ForContainer {
             dashStyles.TryGetValue(borderType, out DashStyle dashStyle);
             textFrame.LineFormat.DashStyle = dashStyle;
             textFrame.LineFormat.Visible = border?.Visible ?? true;
-            textFrame.LineFormat.Width = SMetricsUtil.GetUnitValue(border?.Width, availableSpace.X);
+            textFrame.LineFormat.Width = SMetricsUtil.GetUnitValue(border?.Width ?? new SMeasure(1), availableSpace.X);
         }
 
         SMargin? margin = style.Margin;
 
         if (margin != null) {
-            textFrame.MarginLeft = SMetricsUtil.GetUnitValue(margin.Left, availableSpace.X);
-            textFrame.MarginRight = SMetricsUtil.GetUnitValue(margin.Right, availableSpace.X);
-            textFrame.MarginTop = SMetricsUtil.GetUnitValue(margin.Top, availableSpace.Y);
-            textFrame.MarginBottom = SMetricsUtil.GetUnitValue(margin.Bottom, availableSpace.Y);
+            textFrame.MarginLeft = SMetricsUtil.GetUnitValue(margin.Left ?? new SMeasure(0), availableSpace.X);
+            textFrame.MarginRight = SMetricsUtil.GetUnitValue(margin.Right ?? new SMeasure(0), availableSpace.X);
+            textFrame.MarginTop = SMetricsUtil.GetUnitValue(margin.Top ?? new SMeasure(0), availableSpace.Y);
+            textFrame.MarginBottom = SMetricsUtil.GetUnitValue(margin.Bottom ?? new SMeasure(0), availableSpace.Y);
         }
 
         visitor.VisitedObjects.Push(textFrame);

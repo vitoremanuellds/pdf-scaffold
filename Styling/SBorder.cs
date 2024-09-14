@@ -6,9 +6,9 @@ namespace PDFScaffold.Styling;
 public class SBorder(
     SMeasure? width = null,
     Color? color = null,
-    bool? visible = false,
+    bool? visible = true,
     SMeasure? distanceFromContent = null,
-    SBorderType? borderType = null
+    SBorderType? borderType = SBorderType.Single
 )
 {
 

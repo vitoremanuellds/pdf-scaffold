@@ -1,7 +1,9 @@
 ﻿using MigraDoc.DocumentObjectModel;
+using MigraDoc.Rendering;
 using PDFScaffold.Styling;
 using PDFScaffold.Visitors;
 using PDFScaffold.Visitors.Default;
+using PdfSharp.Pdf;
 
 namespace PDFScaffold.Scaffold;
 
@@ -44,7 +46,7 @@ public class SDocument(
     /// be created and inserted. If it is null, a new Migradoc Document object will be created.</param>
     /// <returns>Migradoc Document object populated with
     /// the corresponding components of the objects inside the SDocument.</returns>
-    public Document Build(Document? document) {
+    public Document Build(Document? document = null) {
         document ??= new Document();
 
         var visitor = new SVisitor {
@@ -53,6 +55,26 @@ public class SDocument(
 
         Accept(visitor);
         return visitor.Document;
+    }
+
+
+    public byte[] GeneratePdf(Document? document = null)
+    {
+        Document doc = this.Build(document);
+        PdfDocumentRenderer renderer = new();
+        renderer.Document = doc; // This is the document we've been builing
+        renderer.PdfDocument.PageLayout = PdfPageLayout.SinglePage;
+        renderer.PdfDocument.ViewerPreferences.FitWindow = true;
+
+        // Rendering the document
+        renderer.RenderDocument();
+
+        MemoryStream stream = new();
+        renderer.PdfDocument.Save(stream);
+        byte[] result = stream.ToArray();
+        stream.Close();
+
+        return result;
     }
 
     public void Accept(IPdfScaffoldVisitor visitor)

@@ -21,7 +21,7 @@ internal static class ForDocument {
             }
         }
 
-        if (document.Sections == null) {
+        if (document.Sections == null || document.Sections.Count == 0) {
             throw new Exception("There must be at least one section in the document!");
         }
 
