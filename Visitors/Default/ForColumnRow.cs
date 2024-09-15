@@ -17,7 +17,10 @@ public static class ForColumnRow {
         var father = visitor.VisitedObjects.Peek();
         Table table;
 
-        if (father is Cell c) {
+        if (father is Section section)
+        {
+            table = section.AddTable();
+        } else if (father is Cell c) {
             table = c.AddTextFrame().AddTable();
         } else if (father is TextFrame tf) {
             table = tf.AddTable();
@@ -29,14 +32,16 @@ public static class ForColumnRow {
         SetFormat(table, style, column.FathersStyle!.Dimensions!);
 
         // Borders
-        SetBorders(table, style, column.FathersStyle!.Dimensions!);
+        if (style.Borders != null) { 
+            SetBorders(table, style, column.FathersStyle!.Dimensions!);
+        }
 
         // Padding
 
         // Shading
         SetShading(table, style);
 
-        // var tColumn = table.AddColumn();
+        table.AddColumn();
 
         for (int i = 0; i < column.Elements.Count; i++)
         {
@@ -58,7 +63,11 @@ public static class ForColumnRow {
         var father = visitor.VisitedObjects.Peek();
         Table table;
 
-        if (father is Cell c) {
+        if (father is Section section)
+        {
+            table = section.AddTable();
+        }
+        else if (father is Cell c) {
             table = c.AddTextFrame().AddTable();
         } else if (father is TextFrame tf) {
             table = tf.AddTable();
@@ -70,19 +79,21 @@ public static class ForColumnRow {
         SetFormat(table, style, row.FathersStyle!.Dimensions!);
 
         // Borders
-        SetBorders(table, style, row.FathersStyle!.Dimensions!);
+        if (style.Borders != null) { 
+            SetBorders(table, style, row.FathersStyle!.Dimensions!);
+        }
 
         // Padding
 
         // Shading
         SetShading(table, style);
 
+        table.GenerateColumns(row.Elements.Count);
         var tRow = table.AddRow();
 
         for (int i = 0; i < row.Elements.Count; i++)
         {
-            table.AddColumn();
-            var cell = tRow.Cells[0];
+            var cell = tRow.Cells[i];
             visitor.VisitedObjects.Push(cell);
 
             var el = row.Elements.ElementAt(i);

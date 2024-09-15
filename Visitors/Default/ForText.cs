@@ -19,8 +19,8 @@ public static class ForText {
 
         if (father is Section section) {
             p = section.AddParagraph();
-        } else if (father is Table table) {
-            p = table.Rows[paragraph.TablePos.Item2].Cells[paragraph.TablePos.Item1].AddParagraph();
+        } else if (father is Cell cell) {
+            p = cell.AddParagraph();
         } else if (father is TextFrame frame) {
             p = frame.AddParagraph();
         } else {
@@ -267,7 +267,17 @@ public static class ForText {
 
         if (father is Section section) {
             p = section.AddParagraph();
-        } else {
+        }
+        else if (father is Cell cell)
+        {
+            p = cell.AddParagraph();
+        }
+        else if (father is TextFrame frame)
+        {
+            p = frame.AddParagraph();
+        }
+        else
+        {
             throw new Exception("The heading can only be placed inside an SSection.");
         }
 

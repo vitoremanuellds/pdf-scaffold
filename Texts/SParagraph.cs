@@ -5,12 +5,12 @@ using PDFScaffold.Visitors;
 namespace PDFScaffold.Texts;
 
 public class SParagraph(
+    ICollection<STextElement> content,
     SStyle? style = null,
     string? useStyle = null,
-    string? name = null,
-    ICollection<STextElement>? content = null
+    string? name = null
 ) : SSectionElement(style, useStyle, name) {
-    public ICollection<STextElement>? Content { get; } = content;
+    public ICollection<STextElement> Content { get; } = content;
 
     public override void Accept(IPdfScaffoldVisitor visitor)
     {

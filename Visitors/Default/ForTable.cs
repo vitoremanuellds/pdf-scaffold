@@ -26,40 +26,125 @@ public static class ForTable {
             throw new Exception("An STable can only be placed inside an SSection, SColumn, SRow or SContainer");
         }
 
-        int columns = 0;
-        int rows = table.Rows.Count;
-
-        for (int i = 0; i < rows; i++)
-        {
-            // t.AddRow();
-            STableRow row = table.Rows.ElementAt(i);
-            row.RowIndex = i;
-            row.MaxRowIndex = rows;
-            columns = Math.Max(columns, row.Cells.Count);
-        }
+        var (columns, rows) = TableDimensions(table.Rows);
 
         if (table.ColumnSizes != null && table.ColumnSizes.Count != columns) {
             throw new Exception("The count of column sizes provided does not match with the number of columns inside the table.");
         }
 
+        Unit defaultWidth = Unit.FromPoint(table.FathersStyle!.Dimensions!.X / columns);
+
         for (int i = 0; i < columns; i++) {
             Column column = t.AddColumn();
             if (table.ColumnSizes != null) {
                 column.Width = SMetricsUtil.GetUnitValue(table.ColumnSizes!.ElementAt(i), table.FathersStyle!.Dimensions!.X);
+            } else
+            {
+                column.Width = defaultWidth;
             }
         }
 
-        visitor.VisitedObjects.Push(table);
+        t.GenerateRows(rows);
+
+        visitor.VisitedObjects.Push(t);
 
         // Style the Table
 
         // Set Dimensions
 
-        foreach (STableRow row in table.Rows)
+
+        var cells = new Dictionary<(int, int), bool>();
+
+        for (int i = 0; i < table.Rows.Count; i++)
         {
+            STableRow row = table.Rows.ElementAt(i);
+            row.RowIndex = i;
+            row.Positions = cells;
             row.FathersStyle = style;
             row.Accept(visitor);
         }
+    }
+
+    public static (int, int) TableDimensions(ICollection<STableRow> rows)
+    {
+        int cs = 0;
+        int rs = rows.Count;
+
+        var cells = new Dictionary<(int, int), bool>();
+        int rowIndex = 0;
+
+        foreach (STableRow row in rows)
+        {
+            int columnIndex = 0;
+
+            foreach (var cell in row.Cells)
+            {
+                while (true)
+                {
+                    int neededColumns = 0;
+
+                    bool isLastColumn = cs == columnIndex + 1;
+                    bool isNotLastColumn = cs > columnIndex + 1;
+                    bool notEnoughColumns = cs < columnIndex + cell.ColumnSpan;
+                    bool willNeedMoreColumns = isNotLastColumn && notEnoughColumns;
+                    bool noColumnsLeft = cs < columnIndex + 1;
+
+                    if (isLastColumn)
+                    {
+                        neededColumns = cell.ColumnSpan - 1;
+                    }
+                    else if (willNeedMoreColumns)
+                    {
+                        neededColumns = columnIndex + cell.ColumnSpan - cs;
+                    }
+                    else if (noColumnsLeft)
+                    {
+                        neededColumns = cell.ColumnSpan;
+                    }
+
+                    cs += neededColumns;
+
+                    bool cellIsEmpty = !cells.ContainsKey((rowIndex, columnIndex));
+                    if (cellIsEmpty)
+                    {
+                        cells.Add((rowIndex, columnIndex), true );
+                        break;
+                    }
+
+                    columnIndex += 1;
+                }
+
+                if (cell.ColumnSpan > 1)
+                {
+                    for (int i = 1; i < cell.ColumnSpan; i++)
+                    {
+                        cells.TryAdd((rowIndex, columnIndex + i), true);
+                    }
+                    columnIndex += cell.ColumnSpan - 1;
+                }
+
+                if (cell.RowSpan > 1)
+                {
+                    if ((rowIndex + cell.RowSpan - 1) > rs)
+                    {
+                        throw new Exception($"The RowSpan \"{cell.RowSpan}\" of the cell can not be applied, because it traspasses the bounderies of the table.");
+                    }
+                    for (int i = 1; i < cell.RowSpan; i++)
+                    {
+                        for (int j = 0; j < cell.ColumnSpan; j++)
+                        {
+                            cells.Add((rowIndex + i, columnIndex + j), true);
+                        }
+                    }
+                }
+
+                columnIndex += 1;
+            }
+
+            rowIndex += 1;
+        }
+
+        return (cs, rs);
     }
 
     public static void DoForTableRow(this SVisitor visitor, STableRow row) {
@@ -80,47 +165,44 @@ public static class ForTable {
         // Set Dimensions
 
         int columnIndex = 0;
+        var cells = row.Positions;
 
         foreach (var cell in row.Cells)
         {
             Cell c;
             while (true) {
-                int neededColumns = 0;
-
-                bool isLastColumn = table.Columns.Count == columnIndex + 1;
-                bool isNotLastColumn = table.Columns.Count > columnIndex + 1;
-                bool notEnoughColumns = table.Columns.Count < columnIndex + cell.ColumnSpan;
-                bool willNeedMoreColumns = isNotLastColumn && notEnoughColumns;
-                bool noColumnsLeft = table.Columns.Count < columnIndex + 1;
-
-                if (isLastColumn) {
-                    neededColumns = cell.ColumnSpan - 1;
-                } else if (willNeedMoreColumns) {
-                    neededColumns = columnIndex + cell.ColumnSpan - table.Columns.Count;
-                } else if (noColumnsLeft) {
-                    neededColumns = cell.ColumnSpan;
-                }
-
-                table.GenerateColumns(neededColumns);
-
-                c = r.Cells[columnIndex];
-                bool cellIsEmpty = c.Elements.Count == 0;
-                if (cellIsEmpty) {
+                bool cellIsEmpty = !cells!.ContainsKey((row.RowIndex, columnIndex));
+                if (cellIsEmpty)
+                {
+                    c = r.Cells[columnIndex];
+                    cells.Add((row.RowIndex, columnIndex), true );
                     break;
                 }
 
                 columnIndex += 1;
+                
             }
 
             if (cell.ColumnSpan > 1) {
                 c.MergeRight = cell.ColumnSpan - 1;
+                for (int i = 1; i < cell.ColumnSpan; i++)
+                {
+                    cells.TryAdd((row.RowIndex, columnIndex + i), true);
+                }
             }
 
             if (cell.RowSpan > 1) {
-                if ((row.RowIndex + cell.RowSpan - 1) > row.MaxRowIndex) {
-                    throw new Exception("The RowSpan of the cell can not be applied, because it traspasses the bounderies of the table.");
-                }
+                //if ((row.RowIndex + cell.RowSpan - 1) > row.MaxRowIndex) {
+                //    throw new Exception("The RowSpan of the cell can not be applied, because it traspasses the bounderies of the table.");
+                //}
                 c.MergeDown = cell.RowSpan - 1;
+                for (int i = 1; i < cell.RowSpan; i++)
+                {
+                    for (int j = 0; j < cell.ColumnSpan; j++)
+                    {
+                        cells.Add((row.RowIndex + i, columnIndex + j), true);
+                    }
+                }
             }
 
             visitor.VisitedObjects.Push(c);
@@ -136,6 +218,14 @@ public static class ForTable {
         for (int i = 0; i < columns; i++)
         {
             table.AddColumn();
+        }
+    }
+
+    internal static void GenerateRows(this Table table, int rows)
+    {
+        for (int i = 0; i < rows; i++)
+        {
+            table.AddRow();
         }
     }
 

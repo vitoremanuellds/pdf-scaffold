@@ -1,5 +1,7 @@
 using MigraDoc.DocumentObjectModel;
 using PDFScaffold.Styling;
+using PDFScaffold.Visitors;
+using System.Net.Mime;
 
 namespace PDFScaffold.Texts;
 
@@ -9,9 +11,14 @@ public class SHeading(
     SStyle? style = null,
     string? useStyle = null,
     string? name = null
-) : SParagraph(style, useStyle, name, content) {
+) : SParagraph(content, style, useStyle, name) {
 
     public int Level { get; } = level;
+
+    public override void Accept(IPdfScaffoldVisitor visitor)
+    {
+        visitor.ForHeading(this);
+    }
 
     public static Unit GetFontSize(int level) {
         return level switch

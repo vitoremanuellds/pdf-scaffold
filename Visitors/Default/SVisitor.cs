@@ -55,17 +55,17 @@ public class SVisitor : IPdfScaffoldVisitor
 
     public void ForTable(STable table)
     {
-        throw new NotImplementedException();
+        this.DoForTable(table);
     }
 
     public void ForTableCell(STableCell tableCell)
     {
-        throw new NotImplementedException();
+        this.DoForTableCell(tableCell);
     }
 
     public void ForTableRow(STableRow tableRow)
     {
-        throw new NotImplementedException();
+        this.DoForTableRow(tableRow);
     }
 
     // public void ForBookmark(SBookmark bookmark)
