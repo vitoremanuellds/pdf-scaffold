@@ -221,7 +221,6 @@ public static class ForText {
             SetBorder(paragraph, style.Borders.Top, p.Format.Borders.Top, false);
             p.Format.Borders.DistanceFromTop = SMetricsUtil.GetUnitValue(style.Borders.Top.DistanceFromContent ?? new SMeasure(0), d.Y);
         }
-
     }
 
     private static void SetBorder(
@@ -257,5 +256,79 @@ public static class ForText {
         b.Visible = border.Visible ?? false;
         SDimensions d = paragraph.FathersStyle!.Dimensions!;
         b.Width = border.Width != null ? SMetricsUtil.GetUnitValue(border.Width, horizontal ? d.X : d.Y) : Unit.FromPoint(1);
+    }
+
+    public static void DoForHeading(this SVisitor visitor, SHeading heading) {
+        SStyle style = visitor.GetStyle(heading.Style, heading.UseStyle) ?? new SStyle();
+        style.Merge(heading.FathersStyle);
+
+        Paragraph p;
+        var father = visitor.VisitedObjects.Peek();
+
+        if (father is Section section) {
+            p = section.AddParagraph();
+        } else {
+            throw new Exception("The heading can only be placed inside an SSection.");
+        }
+
+        if (heading.Name != null) {
+            p.AddBookmark('#' + heading.Name);
+        }
+
+        // p.Format;
+        p.Format.Font.Color = style.FontColor ?? Colors.Black;
+        p.Format.Font.Bold = style.Bold ?? true;
+        p.Format.Font.Italic = style.Italic ?? false;
+        p.Format.Font.Underline = SUnderlineUtils.GetUnderline(style.Underline ?? SUnderline.None);
+        if (style.FontSize != null)
+        {
+            p.Format.Font.Size = SMetricsUtil.GetUnitValue(style.FontSize, heading.FathersStyle!.Dimensions!.Y);
+        } else {
+            p.Format.Font.Size = SHeading.GetFontSize(heading.Level);
+        }
+
+        p.Format.Font.Subscript = (style.Subscript ?? false) && !(style.Superscript ?? false);
+        p.Format.Font.Superscript = (style.Superscript ?? false) && !(style.Subscript ?? false);
+        p.Format.Shading.Color = style.Shading ?? Color.Empty;
+        switch (style.HorizontalAlignment)
+        {
+            case SAlignment.Start:
+                p.Format.Alignment = ParagraphAlignment.Left;
+                break;
+            case SAlignment.Center:
+                p.Format.Alignment = ParagraphAlignment.Center;
+                break;
+            case SAlignment.End:
+                p.Format.Alignment = ParagraphAlignment.Right;
+                break;
+            case SAlignment.Justified:
+                p.Format.Alignment = ParagraphAlignment.Justify;
+                break;
+        }
+
+        if (style.Borders != null) {
+            SetBorders(heading, p, style);
+        }
+
+        p.Format.OutlineLevel = heading.Level switch {
+            1 => OutlineLevel.Level1,
+            2 => OutlineLevel.Level2,
+            3 => OutlineLevel.Level3,
+            4 => OutlineLevel.Level4,
+            5 => OutlineLevel.Level5,
+            6 => OutlineLevel.Level6,
+            _ => OutlineLevel.Level1,
+        };
+
+        visitor.VisitedObjects.Push(p);
+        style.Dimensions = heading.FathersStyle!.Dimensions;
+
+        foreach (STextElement item in heading.Content ?? [])
+        {
+            item.FathersStyle = style;
+            item.Accept(visitor);
+        }
+
+        visitor.VisitedObjects.Pop();
     }
 }

@@ -1,5 +1,6 @@
 using MigraDoc.DocumentObjectModel;
 using MigraDoc.DocumentObjectModel.Shapes;
+using MigraDoc.DocumentObjectModel.Tables;
 using PDFScaffold.Layout;
 using PDFScaffold.Metrics;
 using PDFScaffold.Scaffold;
@@ -18,8 +19,10 @@ public static class ForContainer {
 
         if (father != null && father is Section section) {
             textFrame = section.AddTextFrame();
+        } else if (father is Cell cell) {
+            textFrame = cell.AddTextFrame();
         } else {
-            throw new Exception("A Container can not be used inside other elements than a SSection");
+            throw new Exception("A Container can not be used inside other elements than an SSection, SColumn or SRow");
         }
 
         SDimensions availableSpace = container.FathersStyle!.Dimensions!;
@@ -41,14 +44,6 @@ public static class ForContainer {
             textFrame.FillFormat.Color = style.Shading ?? Colors.White;
         }
 
-        var dashStyles = new Dictionary<SBorderType, DashStyle>{
-            { SBorderType.Dash, DashStyle.Dash },
-            { SBorderType.DashDot, DashStyle.DashDot },
-            { SBorderType.DashDotDot, DashStyle.DashDotDot },
-            { SBorderType.Solid, DashStyle.Solid },
-            { SBorderType.SquareDot, DashStyle.SquareDot },
-        };
-
         SBorder? border = style.Borders?.Left;
 
         if (border != null) {
@@ -56,8 +51,15 @@ public static class ForContainer {
             SBorderType borderType = 
                 border?.BorderType ?? SBorderType.Solid;
 
-            dashStyles.TryGetValue(borderType, out DashStyle dashStyle);
-            textFrame.LineFormat.DashStyle = dashStyle;
+            textFrame.LineFormat.DashStyle = borderType switch {
+                SBorderType.Dash => DashStyle.Dash,
+                SBorderType.DashDot => DashStyle.DashDot,
+                SBorderType.DashDotDot => DashStyle.DashDotDot,
+                SBorderType.Solid => DashStyle.Solid,
+                SBorderType.SquareDot => DashStyle.SquareDot,
+                _ => DashStyle.Solid
+            };
+            
             textFrame.LineFormat.Visible = border?.Visible ?? true;
             textFrame.LineFormat.Width = SMetricsUtil.GetUnitValue(border?.Width ?? new SMeasure(1), availableSpace.X);
         }
