@@ -16,11 +16,11 @@ namespace PDFScaffold.Scaffold;
 /// <param name="elements">The list of elements inside of this section. It can be null.
 /// </param>
 public class SSection(
+    ICollection<SSectionElement> elements,
     SStyle? style = null,
     string? useStyle = null,
     SPageFormat? pageFormat = null,
-    SMargin? margin = null,
-    ICollection<SSectionElement>? elements = null
+    SMargin? margin = null
 ) : IPdfScaffoldElement {
     public SStyle? Style { get; } = style;
     public string? UseStyle { get; } = useStyle;

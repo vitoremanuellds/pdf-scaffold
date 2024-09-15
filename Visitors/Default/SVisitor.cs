@@ -75,12 +75,12 @@ public class SVisitor : IPdfScaffoldVisitor
 
     public void ForHeading(SHeading heading)
     {
-        throw new NotImplementedException();
+        this.DoForHeading(heading);
     }
 
     public void ForLink(SLink link)
     {
-        throw new NotImplementedException();
+        this.DoForLink(link);
     }
 
     public void ForParagraph(SParagraph paragraph)

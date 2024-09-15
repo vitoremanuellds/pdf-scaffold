@@ -4,12 +4,12 @@ using PDFScaffold.Styling;
 namespace PDFScaffold.Texts;
 
 public class SHeading(
+    ICollection<STextElement> content,
     int level = 1,
     SStyle? style = null,
     string? useStyle = null,
-    string? name = null,
-    ICollection<STextElement>? content = null
-    ) : SParagraph(style, useStyle, name, content) {
+    string? name = null
+) : SParagraph(style, useStyle, name, content) {
 
     public int Level { get; } = level;
 

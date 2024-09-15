@@ -23,18 +23,18 @@ namespace PDFScaffold.Scaffold;
 ///     be at least one SSection inside of the list.
 /// </param>
 public class SDocument(
+    ICollection<SSection> sections,
     string? title = null,
     string? author = null,
     string? subject = null,
     ICollection<string>? keywords = null,
-    ICollection<SStyle>? styles = null,
-    ICollection<SSection>? sections = null
+    ICollection<SStyle>? styles = null
 ) : IPdfScaffoldElement {
     public string? Title { get; } = title;
     public string? Author { get; } = author;
     public string? Subject { get; } = subject;
     public ICollection<string>? Keywords { get; } = keywords;
-    public ICollection<SSection>? Sections { get; } = sections;
+    public ICollection<SSection> Sections { get; } = sections;
     private IDictionary<string, SStyle> _styles = new Dictionary<string, SStyle>();
     public ICollection<SStyle>? Styles { get; } = styles;
 
