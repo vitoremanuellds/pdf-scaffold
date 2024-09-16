@@ -15,33 +15,40 @@ public static class ForColumnRow {
         style.Merge(column.FathersStyle);
 
         var father = visitor.VisitedObjects.Peek();
+        TextFrame tf;
         Table table;
 
         if (father is Section section)
         {
-            table = section.AddTable();
+            tf = section.AddTextFrame();
+            table = tf.AddTable();
         } else if (father is Cell c) {
-            table = c.AddTextFrame().AddTable();
-        } else if (father is TextFrame tf) {
+            tf = c.AddTextFrame();
+            table = tf.AddTable();
+        } else if (father is TextFrame t) {
+            tf = t;
             table = tf.AddTable();
         } else {
             throw new Exception("An SColumn can only be inside an SSection, SContainer or SRow");
         }
 
+        if (style.Borders != null) { 
+            var (x, y) = SetBorders(table, style, column.FathersStyle!.Dimensions!);
+            column.FathersStyle!.Dimensions!.X -= x;
+            column.FathersStyle!.Dimensions!.Y -= y;
+        }
+        
+        SetWidthAndHeight(tf, style, column.FathersStyle!.Dimensions!);
+
         // Format
         SetFormat(table, style, column.FathersStyle!.Dimensions!);
-
-        // Borders
-        if (style.Borders != null) { 
-            SetBorders(table, style, column.FathersStyle!.Dimensions!);
-        }
 
         // Padding
 
         // Shading
         SetShading(table, style);
 
-        table.AddColumn();
+        table.AddColumn(style.Dimensions!.X);
 
         for (int i = 0; i < column.Elements.Count; i++)
         {
@@ -61,27 +68,35 @@ public static class ForColumnRow {
         style.Merge(row.FathersStyle);
 
         var father = visitor.VisitedObjects.Peek();
+        TextFrame tf;
         Table table;
 
         if (father is Section section)
         {
-            table = section.AddTable();
-        }
-        else if (father is Cell c) {
-            table = c.AddTextFrame().AddTable();
-        } else if (father is TextFrame tf) {
+            tf = section.AddTextFrame();
+            table = tf.AddTable();
+        } else if (father is Cell c) {
+            tf = c.AddTextFrame();
+            table = tf.AddTable();
+        } else if (father is TextFrame t) {
+            tf = t;
             table = tf.AddTable();
         } else {
             throw new Exception("An SColumn can only be inside an SSection, SContainer or SRow");
         }
 
+        // Borders
+        if (style.Borders != null) { 
+            var (x,y) = SetBorders(table, style, row.FathersStyle!.Dimensions!);
+            row.FathersStyle!.Dimensions!.X -= x;
+            row.FathersStyle!.Dimensions!.Y -= y;
+        }
+        
+        SetWidthAndHeight(tf, style, row.FathersStyle!.Dimensions!);
+
         // Format
         SetFormat(table, style, row.FathersStyle!.Dimensions!);
 
-        // Borders
-        if (style.Borders != null) { 
-            SetBorders(table, style, row.FathersStyle!.Dimensions!);
-        }
 
         // Padding
 
@@ -111,28 +126,55 @@ public static class ForColumnRow {
         if (style.FontSize != null) table.Format.Font.Size = SMetricsUtil.GetUnitValue(style.FontSize, dimensions.Y);
     }
 
-    
+    internal static void SetWidthAndHeight(TextFrame tf, SStyle style, SDimensions dimensions) {
+        if (style.Width != null) {
+            tf.Width = SMetricsUtil.GetUnitValue(style.Width, dimensions.X);
+        } else {
+            tf.Width = Unit.FromPoint(dimensions.X);
+        }
 
-    internal static void SetBorders(Table table, SStyle style, SDimensions dimensions) {
+        if (style.Height != null) {
+            tf.Height = SMetricsUtil.GetUnitValue(style.Height, dimensions.Y);
+        } else {
+            tf.Height = Unit.FromPoint(dimensions.Y);
+        }
+
+        style.Dimensions = new SDimensions(tf.Height.Point, tf.Width.Point);
+    }
+
+    internal static (double, double) SetBorders(Table table, SStyle style, SDimensions dimensions) {
+        double bordersWidth = 0;
+        double bordersHeight = 0;
+
         if (style.Borders!.Left != null) {
             SetBorder(dimensions, style.Borders.Left, table.Format.Borders.Left, true);
             table.Format.Borders.DistanceFromLeft = SMetricsUtil.GetUnitValue(style.Borders.Left.DistanceFromContent ?? new SMeasure(0), dimensions.X);
+            bordersWidth += (style.Borders.Left.Width ?? new SMeasure(0)).Value;
+            bordersWidth += table.Format.Borders.DistanceFromLeft.Point;
         }
 
         if (style.Borders!.Right != null) {
             SetBorder(dimensions, style.Borders.Right, table.Format.Borders.Right, true);
             table.Format.Borders.DistanceFromRight = SMetricsUtil.GetUnitValue(style.Borders.Right.DistanceFromContent ?? new SMeasure(0), dimensions.X);
+            bordersWidth += (style.Borders.Right.Width ?? new SMeasure(0)).Value;
+            bordersWidth += table.Format.Borders.DistanceFromRight.Point;
         }
 
         if (style.Borders!.Bottom != null) {
             SetBorder(dimensions, style.Borders.Bottom, table.Format.Borders.Bottom, false);
             table.Format.Borders.DistanceFromBottom = SMetricsUtil.GetUnitValue(style.Borders.Bottom.DistanceFromContent ?? new SMeasure(0), dimensions.Y);
+            bordersHeight += (style.Borders.Bottom.Width ?? new SMeasure(0)).Value;
+            bordersHeight += table.Format.Borders.DistanceFromBottom.Point;
         }
 
         if (style.Borders!.Top != null) {
             SetBorder(dimensions, style.Borders.Top, table.Format.Borders.Top, false);
             table.Format.Borders.DistanceFromTop = SMetricsUtil.GetUnitValue(style.Borders.Top.DistanceFromContent ?? new SMeasure(0), dimensions.Y);
+            bordersHeight += (style.Borders.Top.Width ?? new SMeasure(0)).Value;
+            bordersHeight += table.Format.Borders.DistanceFromTop.Point;
         }
+
+        return (bordersWidth, bordersHeight);
     }
 
     internal static void SetBorder(

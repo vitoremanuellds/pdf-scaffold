@@ -10,16 +10,18 @@ namespace PDFScaffold.Layout;
 /// <param name="content">The SSectionElement contained inside the SContainer.</param>
 /// <param name="style">The SStyle used inside the SContainer.</param>
 /// <param name="useStyle">The name of the Style to be used on the SContainer.</param>
-/// <param name="singlePage">If true, the container will ocupay the rest of whole page. If false, the container will grow to fit the content. If true, then the width and height will be overwritten.</param>
 public class SContainer(
     SSectionElement content,
     SStyle? style = null,
     string? useStyle = null,
-    string? name = null,
-    bool? singlePage = false
+    string? name = null
+    // bool? singlePage = false
 ) : SSectionElement(style, useStyle, name) {
 
-    public bool? SinglePage { get; } = singlePage;
+    // public bool? SinglePage { get; } = singlePage;
+    /// <summary>
+    /// The SSectionElement contained inside the SContainer.
+    /// </summary>
     public SSectionElement Content { get; } = content;
 
     public override void Accept(IPdfScaffoldVisitor visitor) {

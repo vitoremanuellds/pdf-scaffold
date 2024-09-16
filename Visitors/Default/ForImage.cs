@@ -20,12 +20,12 @@ internal static class ForImage {
 
         if (father != null && father is Section section) {
             mdImage = section.AddImage(image.Path);
-        } else if (father is Table table) {
-            mdImage = table.Rows[image.TablePos.Item2].Cells[image.TablePos.Item1].AddImage(image.Path);
+        } else if (father is Cell cell) {
+            mdImage = cell.AddImage(image.Path);
         } else if (father is TextFrame textFrame) {
             mdImage = textFrame.AddImage(image.Path);
         } else {
-            throw new Exception("An SImage can not be used outside a SSection or an SColumn/SRow/SContainer");
+            throw new Exception("An SImage can not be used outside an SSection, SColumn, SRow, SContainer and STableCell");
         }
 
         var x = image.FathersStyle!.Dimensions!.X;
@@ -40,18 +40,12 @@ internal static class ForImage {
         if (crop != null) {
             mdImage.PictureFormat.CropTop = SMetricsUtil.GetUnitValue(crop.FromTop ?? new SMeasure(0), h);
             mdImage.PictureFormat.CropBottom = SMetricsUtil.GetUnitValue(crop.FromBottom ?? new SMeasure(0), h);
+            
             mdImage.PictureFormat.CropLeft = SMetricsUtil.GetUnitValue(crop.FromLeft ?? new SMeasure(0), w);
             mdImage.PictureFormat.CropRight = SMetricsUtil.GetUnitValue(crop.FromRight ?? new SMeasure(0), w);
         }
 
-        if (style.Width != null)
-        {
-            mdImage.Width = SMetricsUtil.GetUnitValue(style.Width, x);
-        }
-        if (style.Height != null)
-        {
-            mdImage.Height = SMetricsUtil.GetUnitValue(style.Height, y);
-        }
+        
 
         mdImage.WrapFormat.Style = 
             style.PositionType == SPositionType.Fixed ?
@@ -77,14 +71,6 @@ internal static class ForImage {
         }
         mdImage.Resolution = style.Resolution ?? 72;
 
-        var dashStyles = new Dictionary<SBorderType, DashStyle>{
-            { SBorderType.Dash, DashStyle.Dash },
-            { SBorderType.DashDot, DashStyle.DashDot },
-            { SBorderType.DashDotDot, DashStyle.DashDotDot },
-            { SBorderType.Solid, DashStyle.Solid },
-            { SBorderType.SquareDot, DashStyle.SquareDot },
-        };
-
         SBorder? border = style.Borders?.Left;
 
         if (border != null) {
@@ -92,10 +78,19 @@ internal static class ForImage {
             SBorderType borderType = 
                 border.BorderType ?? SBorderType.Solid;
 
-            dashStyles.TryGetValue(borderType, out DashStyle dashStyle);
-            mdImage.LineFormat.DashStyle = dashStyle;
+            mdImage.LineFormat.DashStyle = borderType switch {
+                SBorderType.Dash => DashStyle.Dash,
+                SBorderType.DashDot => DashStyle.DashDot,
+                SBorderType.DashDotDot => DashStyle.DashDotDot,
+                SBorderType.Solid => DashStyle.Solid,
+                SBorderType.SquareDot => DashStyle.SquareDot,
+                _ => DashStyle.Solid
+            };
             mdImage.LineFormat.Visible = border.Visible ?? true;
-            mdImage.LineFormat.Width = SMetricsUtil.GetUnitValue(border.Width ?? new SMeasure(1), w);
+            var borderWidth = SMetricsUtil.GetUnitValue(border.Width ?? new SMeasure(1), w);
+            mdImage.LineFormat.Width = borderWidth;
+            width = new SMeasure(width.Value - (2 * borderWidth.Point));
+            height = new SMeasure(height.Value - (2 * borderWidth.Point));
         }
         
         SMargin? margin = style.Margin;
@@ -106,5 +101,16 @@ internal static class ForImage {
             mdImage.WrapFormat.DistanceLeft = SMetricsUtil.GetUnitValue(margin.Left ?? new SMeasure(0), w);
             mdImage.WrapFormat.DistanceRight = SMetricsUtil.GetUnitValue(margin.Right ?? new SMeasure(0), w);
         }
+
+        if (style.Width != null)
+        {
+            mdImage.Width = SMetricsUtil.GetUnitValue(style.Width, x);
+        }
+        if (style.Height != null)
+        {
+            mdImage.Height = SMetricsUtil.GetUnitValue(style.Height, y);
+        }
+
+        style.Dimensions = new SDimensions(height.Value, width.Value);
     }
 }

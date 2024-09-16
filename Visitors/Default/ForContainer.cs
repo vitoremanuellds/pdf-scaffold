@@ -27,23 +27,6 @@ public static class ForContainer {
 
         SDimensions availableSpace = container.FathersStyle!.Dimensions!;
 
-        if (container.SinglePage != null && (bool) container.SinglePage) {
-            textFrame.Height = Unit.FromPoint(availableSpace.Y);
-            textFrame.Width = Unit.FromPoint(availableSpace.X);
-        } else {
-            if (style.Width != null) {
-                textFrame.Width = SMetricsUtil.GetUnitValue(style.Width, availableSpace.X);
-            }
-
-            if (style.Height != null) {
-                textFrame.Height = SMetricsUtil.GetUnitValue(style.Height, availableSpace.Y);
-            }
-        }
-
-        if (style.Shading != null) {
-            textFrame.FillFormat.Color = style.Shading ?? Colors.White;
-        }
-
         SBorder? border = style.Borders?.Left;
 
         if (border != null) {
@@ -62,6 +45,26 @@ public static class ForContainer {
             
             textFrame.LineFormat.Visible = border?.Visible ?? true;
             textFrame.LineFormat.Width = SMetricsUtil.GetUnitValue(border?.Width ?? new SMeasure(1), availableSpace.X);
+            availableSpace.X -= 2 * textFrame.LineFormat.Width.Point;
+            availableSpace.Y -= 2 * textFrame.LineFormat.Width.Point;
+        }
+
+        if (style.Width != null) {
+            textFrame.Width = SMetricsUtil.GetUnitValue(style.Width, availableSpace.X);
+        } else {
+            textFrame.Width = availableSpace.X;
+        }
+
+        if (style.Height != null) {
+            textFrame.Height = SMetricsUtil.GetUnitValue(style.Height, availableSpace.Y);
+        } else {
+            textFrame.Height = availableSpace.Y;
+        }
+
+        style.Dimensions = new SDimensions(textFrame.Height.Point, textFrame.Width.Point);
+
+        if (style.Shading != null) {
+            textFrame.FillFormat.Color = style.Shading ?? Colors.White;
         }
 
         SMargin? margin = style.Margin;

@@ -22,10 +22,33 @@ public class SSection(
     SPageFormat? pageFormat = null,
     SMargin? margin = null
 ) : IPdfScaffoldElement {
+
+    /// <summary>
+    /// An SStyle wich defines the style of all the children inside
+    /// the section.
+    /// </summary>
     public SStyle? Style { get; } = style;
+
+    /// <summary>
+    /// A reference to the name of the style inside the SDocument Style list.
+    /// </summary>
     public string? UseStyle { get; } = useStyle;
+
+    /// <summary>
+    /// The format of the section page. It defines the dimensions of the page.
+    /// If it is null, then the default <c>PageFormat</c> will be A4.
+    /// </summary>
     public SPageFormat? PageFormat { get; } = pageFormat;
+
+    /// <summary>
+    /// Defines the margins of the Section. If null, the default margin value will be
+    /// 1 inch.
+    /// </summary>
     public SMargin? Margin { get; } = margin;
+
+    /// <summary>
+    /// he list of elements inside of this section. It can be null.
+    /// </summary>
     public ICollection<SSectionElement>? Elements { get; } = elements;
 
     public void Accept(IPdfScaffoldVisitor visitor)
