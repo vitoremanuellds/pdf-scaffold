@@ -34,8 +34,12 @@ public static class ForColumnRow {
 
         if (style.Borders != null) { 
             var (x, y) = SetBorders(table, style, column.FathersStyle!.Dimensions!);
-            column.FathersStyle!.Dimensions!.X -= x;
-            column.FathersStyle!.Dimensions!.Y -= y;
+            style.Dimensions = new(
+                column.FathersStyle!.Dimensions!.Y - y,
+                column.FathersStyle!.Dimensions!.X - x
+            );
+        } else {
+            style.Dimensions = column.FathersStyle!.Dimensions;
         }
         
         SetWidthAndHeight(tf, style, column.FathersStyle!.Dimensions!);
@@ -53,6 +57,7 @@ public static class ForColumnRow {
         for (int i = 0; i < column.Elements.Count; i++)
         {
             var cell = table.AddRow().Cells[0];
+            if (i == 0 && style.Name != null) { SetBookmark(style, cell.AddTextFrame()); }
             visitor.VisitedObjects.Push(cell);
 
             var el = column.Elements.ElementAt(i);
@@ -90,6 +95,8 @@ public static class ForColumnRow {
             var (x,y) = SetBorders(table, style, row.FathersStyle!.Dimensions!);
             row.FathersStyle!.Dimensions!.X -= x;
             row.FathersStyle!.Dimensions!.Y -= y;
+        } else {
+            style.Dimensions = row.FathersStyle!.Dimensions;
         }
         
         SetWidthAndHeight(tf, style, row.FathersStyle!.Dimensions!);
@@ -109,6 +116,7 @@ public static class ForColumnRow {
         for (int i = 0; i < row.Elements.Count; i++)
         {
             var cell = tRow.Cells[i];
+            if (i == 0 && style.Name != null) { SetBookmark(style, cell.AddTextFrame()); }
             visitor.VisitedObjects.Push(cell);
 
             var el = row.Elements.ElementAt(i);
@@ -215,5 +223,11 @@ public static class ForColumnRow {
         if (style.Shading != null) {
             table.Shading.Color = (Color) style.Shading;
         }
+    }
+
+    internal static void SetBookmark(SStyle style, TextFrame tf) {
+        tf.Width = Unit.FromPoint(1);
+        tf.Height = Unit.FromPoint(1);
+        tf.AddParagraph().AddBookmark("#" + style.Name!);
     }
 }

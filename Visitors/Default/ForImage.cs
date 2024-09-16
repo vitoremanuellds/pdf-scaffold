@@ -14,18 +14,26 @@ internal static class ForImage {
         SStyle style = visitor.GetStyle(image.Style, image.UseStyle) ?? new SStyle();
         style.Merge(image.FathersStyle);
 
+        Paragraph p;
         Image mdImage;
 
         object father = visitor.VisitedObjects.Peek();
 
         if (father != null && father is Section section) {
-            mdImage = section.AddImage(image.Path);
+            p = section.AddParagraph();
+            mdImage = p.AddImage(image.Path);
         } else if (father is Cell cell) {
-            mdImage = cell.AddImage(image.Path);
+            p = cell.AddParagraph();
+            mdImage = p.AddImage(image.Path);
         } else if (father is TextFrame textFrame) {
-            mdImage = textFrame.AddImage(image.Path);
+            p = textFrame.AddParagraph();
+            mdImage = p.AddImage(image.Path);
         } else {
             throw new Exception("An SImage can not be used outside an SSection, SColumn, SRow, SContainer and STableCell");
+        }
+
+        if (image.Name != null) {
+            p.AddBookmark("#" + image.Name, false);
         }
 
         var x = image.FathersStyle!.Dimensions!.X;

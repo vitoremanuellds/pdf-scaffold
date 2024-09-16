@@ -18,8 +18,10 @@ public static class ForContainer {
         var father = visitor.VisitedObjects.Peek();
 
         if (father != null && father is Section section) {
+            if (style.Name != null) { SetBookmark(style, section.AddTextFrame()); }
             textFrame = section.AddTextFrame();
         } else if (father is Cell cell) {
+            if (style.Name != null) { SetBookmark(style, cell.AddTextFrame()); }
             textFrame = cell.AddTextFrame();
         } else {
             throw new Exception("A Container can not be used inside other elements than an SSection, SColumn or SRow");
@@ -94,5 +96,12 @@ public static class ForContainer {
         }
 
         visitor.VisitedObjects.Pop();
+    }
+
+
+    internal static void SetBookmark(SStyle style, TextFrame tf) {
+        tf.Width = Unit.FromPoint(1);
+        tf.Height = Unit.FromPoint(1);
+        tf.AddParagraph().AddBookmark("#" + style.Name!);
     }
 }

@@ -28,43 +28,21 @@ public static class ForText {
         }
 
         if (paragraph.Name != null) {
-            p.AddBookmark('#' + paragraph.Name);
-        }
-
-        // p.Format;
-        p.Format.Font.Color = style.FontColor ?? Colors.Black;
-        p.Format.Font.Bold = style.Bold ?? false;
-        p.Format.Font.Italic = style.Italic ?? false;
-        p.Format.Font.Underline = SUnderlineUtils.GetUnderline(style.Underline ?? SUnderline.None);
-        if (style.FontSize != null)
-        {
-            p.Format.Font.Size = SMetricsUtil.GetUnitValue(style.FontSize, paragraph.FathersStyle!.Dimensions!.Y);
-        }
-        p.Format.Font.Subscript = (style.Subscript ?? false) && !(style.Superscript ?? false);
-        p.Format.Font.Superscript = (style.Superscript ?? false) && !(style.Subscript ?? false);
-        p.Format.Shading.Color = style.Shading ?? Color.Empty;
-        switch (style.HorizontalAlignment)
-        {
-            case SAlignment.Start:
-                p.Format.Alignment = ParagraphAlignment.Left;
-                break;
-            case SAlignment.Center:
-                p.Format.Alignment = ParagraphAlignment.Center;
-                break;
-            case SAlignment.End:
-                p.Format.Alignment = ParagraphAlignment.Right;
-                break;
-            case SAlignment.Justified:
-                p.Format.Alignment = ParagraphAlignment.Justify;
-                break;
+            p.AddBookmark('#' + paragraph.Name, false);
         }
 
         if (style.Borders != null) {
-            SetBorders(paragraph, p, style);
+            var (x, y) = SetBorders(paragraph, p, style);
+            style.Dimensions = new SDimensions(
+                paragraph.FathersStyle!.Dimensions!.Y - y,
+                paragraph.FathersStyle!.Dimensions!.X - x
+            );
         }
 
+        // p.Format;
+        SetFormat(p.Format, style, paragraph.FathersStyle!.Dimensions!);
+
         visitor.VisitedObjects.Push(p);
-        style.Dimensions = paragraph.FathersStyle!.Dimensions;
 
         foreach (STextElement item in paragraph.Content ?? [])
         {
@@ -200,27 +178,40 @@ public static class ForText {
     }
 
 
-    private static void SetBorders(SParagraph paragraph, Paragraph p, SStyle style) {
+    private static (double, double) SetBorders(SParagraph paragraph, Paragraph p, SStyle style) {
+        double bordersWidth = 0;
+        double bordersHeight = 0;
+
         SDimensions d = paragraph.FathersStyle!.Dimensions!;
         if (style.Borders!.Left != null) {
             SetBorder(paragraph, style.Borders.Left, p.Format.Borders.Left, true);
             p.Format.Borders.DistanceFromLeft = SMetricsUtil.GetUnitValue(style.Borders.Left.DistanceFromContent ?? new SMeasure(0), d.X);
+            bordersWidth += (style.Borders.Left.Width ?? new SMeasure(0)).Value;
+            bordersWidth += p.Format.Borders.DistanceFromLeft.Point;
         }
 
         if (style.Borders!.Right != null) {
             SetBorder(paragraph, style.Borders.Right, p.Format.Borders.Right, true);
             p.Format.Borders.DistanceFromRight = SMetricsUtil.GetUnitValue(style.Borders.Right.DistanceFromContent ?? new SMeasure(0), d.X);
+            bordersWidth += (style.Borders.Right.Width ?? new SMeasure(0)).Value;
+            bordersWidth += p.Format.Borders.DistanceFromRight.Point;
         }
 
         if (style.Borders!.Bottom != null) {
             SetBorder(paragraph, style.Borders.Bottom, p.Format.Borders.Bottom, false);
             p.Format.Borders.DistanceFromBottom = SMetricsUtil.GetUnitValue(style.Borders.Bottom.DistanceFromContent ?? new SMeasure(0), d.Y);
+            bordersHeight += (style.Borders.Bottom.Width ?? new SMeasure(0)).Value;
+            bordersHeight += p.Format.Borders.DistanceFromBottom.Point;
         }
 
         if (style.Borders!.Top != null) {
             SetBorder(paragraph, style.Borders.Top, p.Format.Borders.Top, false);
             p.Format.Borders.DistanceFromTop = SMetricsUtil.GetUnitValue(style.Borders.Top.DistanceFromContent ?? new SMeasure(0), d.Y);
+            bordersHeight += (style.Borders.Top.Width ?? new SMeasure(0)).Value;
+            bordersHeight += p.Format.Borders.DistanceFromTop.Point;
         }
+
+        return (bordersWidth, bordersHeight);
     }
 
     private static void SetBorder(
@@ -282,42 +273,18 @@ public static class ForText {
         }
 
         if (heading.Name != null) {
-            p.AddBookmark('#' + heading.Name);
+            p.AddBookmark('#' + heading.Name, false);
         }
 
         // p.Format;
-        p.Format.Font.Color = style.FontColor ?? Colors.Black;
-        p.Format.Font.Bold = style.Bold ?? true;
-        p.Format.Font.Italic = style.Italic ?? false;
-        p.Format.Font.Underline = SUnderlineUtils.GetUnderline(style.Underline ?? SUnderline.None);
-        if (style.FontSize != null)
-        {
-            p.Format.Font.Size = SMetricsUtil.GetUnitValue(style.FontSize, heading.FathersStyle!.Dimensions!.Y);
-        } else {
-            p.Format.Font.Size = SHeading.GetFontSize(heading.Level);
-        }
-
-        p.Format.Font.Subscript = (style.Subscript ?? false) && !(style.Superscript ?? false);
-        p.Format.Font.Superscript = (style.Superscript ?? false) && !(style.Subscript ?? false);
-        p.Format.Shading.Color = style.Shading ?? Color.Empty;
-        switch (style.HorizontalAlignment)
-        {
-            case SAlignment.Start:
-                p.Format.Alignment = ParagraphAlignment.Left;
-                break;
-            case SAlignment.Center:
-                p.Format.Alignment = ParagraphAlignment.Center;
-                break;
-            case SAlignment.End:
-                p.Format.Alignment = ParagraphAlignment.Right;
-                break;
-            case SAlignment.Justified:
-                p.Format.Alignment = ParagraphAlignment.Justify;
-                break;
-        }
+        SetFormat(p.Format, style, heading.FathersStyle!.Dimensions!);
 
         if (style.Borders != null) {
-            SetBorders(heading, p, style);
+            var (x,y) = SetBorders(heading, p, style);
+            style.Dimensions = new SDimensions(
+                heading.FathersStyle!.Dimensions!.Y - y,
+                heading.FathersStyle!.Dimensions!.X - x
+            );
         }
 
         p.Format.OutlineLevel = heading.Level switch {
@@ -331,7 +298,6 @@ public static class ForText {
         };
 
         visitor.VisitedObjects.Push(p);
-        style.Dimensions = heading.FathersStyle!.Dimensions;
 
         foreach (STextElement item in heading.Content ?? [])
         {
@@ -340,5 +306,34 @@ public static class ForText {
         }
 
         visitor.VisitedObjects.Pop();
+    }
+
+    internal static void SetFormat(ParagraphFormat format, SStyle style, SDimensions dimensions) {
+        format.Font.Color = style.FontColor ?? Colors.Black;
+        format.Font.Bold = style.Bold ?? false;
+        format.Font.Italic = style.Italic ?? false;
+        format.Font.Underline = SUnderlineUtils.GetUnderline(style.Underline ?? SUnderline.None);
+        if (style.FontSize != null)
+        {
+            format.Font.Size = SMetricsUtil.GetUnitValue(style.FontSize, dimensions.Y);
+        }
+        format.Font.Subscript = (style.Subscript ?? false) && !(style.Superscript ?? false);
+        format.Font.Superscript = (style.Superscript ?? false) && !(style.Subscript ?? false);
+        format.Shading.Color = style.Shading ?? Color.Empty;
+        switch (style.HorizontalAlignment)
+        {
+            case SAlignment.Start:
+                format.Alignment = ParagraphAlignment.Left;
+                break;
+            case SAlignment.Center:
+                format.Alignment = ParagraphAlignment.Center;
+                break;
+            case SAlignment.End:
+                format.Alignment = ParagraphAlignment.Right;
+                break;
+            case SAlignment.Justified:
+                format.Alignment = ParagraphAlignment.Justify;
+                break;
+        }
     }
 }
