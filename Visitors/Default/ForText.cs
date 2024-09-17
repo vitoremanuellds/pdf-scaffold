@@ -14,7 +14,6 @@ public static class ForText {
         style.Merge(paragraph.FathersStyle);
 
         var father = visitor.VisitedObjects.Peek();
-
         Paragraph p;
 
         if (father is Section section) {
@@ -33,10 +32,10 @@ public static class ForText {
 
         if (style.Borders != null) {
             var (x, y) = SetBorders(paragraph, p, style);
-            style.Dimensions = new SDimensions(
-                paragraph.FathersStyle!.Dimensions!.Y - y,
-                paragraph.FathersStyle!.Dimensions!.X - x
-            );
+            style.Dimensions!.X -= x;
+            style.Dimensions.Y -= y;
+
+            // Maybe we need to subtract from height and width
         }
 
         // p.Format;
@@ -254,22 +253,28 @@ public static class ForText {
         style.Merge(heading.FathersStyle);
 
         Paragraph p;
+        TextFrame tf;
         var father = visitor.VisitedObjects.Peek();
 
         if (father is Section section) {
-            p = section.AddParagraph();
+            tf = section.AddTextFrame();
+            p = tf.AddParagraph();
         }
         else if (father is Cell cell)
         {
-            p = cell.AddParagraph();
+            tf = cell.AddTextFrame();
+            p = tf.AddParagraph();
         }
         else if (father is TextFrame frame)
         {
-            p = frame.AddParagraph();
+            var table = frame.AddTable();
+            table.AddColumn();
+            tf = table.AddRow().Cells[0].AddTextFrame();
+            p = tf.AddParagraph();
         }
         else
         {
-            throw new Exception("The heading can only be placed inside an SSection.");
+            throw new Exception("The heading can only be placed inside an SSection, SColumn, SRow, SContainer or STableCell.");
         }
 
         if (heading.Name != null) {
@@ -279,12 +284,14 @@ public static class ForText {
         // p.Format;
         SetFormat(p.Format, style, heading.FathersStyle!.Dimensions!);
 
+        SetWidthAndHeight(tf, style, heading.FathersStyle!.Dimensions!);
+
         if (style.Borders != null) {
-            var (x,y) = SetBorders(heading, p, style);
-            style.Dimensions = new SDimensions(
-                heading.FathersStyle!.Dimensions!.Y - y,
-                heading.FathersStyle!.Dimensions!.X - x
-            );
+            var (x, y) = SetBorders(heading, p, style);
+            style.Dimensions!.X -= x;
+            style.Dimensions.Y -= y;
+
+            // Maybe we need to subtract from height and width
         }
 
         p.Format.OutlineLevel = heading.Level switch {
@@ -335,5 +342,21 @@ public static class ForText {
                 format.Alignment = ParagraphAlignment.Justify;
                 break;
         }
+    }
+
+    internal static void SetWidthAndHeight(TextFrame tf, SStyle style, SDimensions dimensions) {
+        if (style.Width != null) {
+            tf.Width = SMetricsUtil.GetUnitValue(style.Width, dimensions.X);
+        } else {
+            tf.Width = Unit.FromPoint(dimensions.X);
+        }
+
+        if (style.Height != null) {
+            tf.Height = SMetricsUtil.GetUnitValue(style.Height, dimensions.Y);
+        } else {
+            tf.Height = Unit.FromPoint(dimensions.Y);
+        }
+
+        style.Dimensions = new SDimensions(tf.Height.Point, tf.Width.Point);
     }
 }

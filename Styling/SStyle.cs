@@ -5,30 +5,28 @@ using PDFScaffold.Scaffold;
 namespace PDFScaffold.Styling;
 
 /// <summary>
-/// Represents the style of a component inside the SDocument.
+/// Represents the style of a component inside the SDocument. The style values set in a parent is passed down to its children, with the exception of Width, Height, TopPosition, LeftPosition, Borders, PositionType, Padding, Margin and Centered.
 /// </summary>
-/// <param name="name">The name of the style used to be referenced inside the SDocument.</param>
 /// <param name="fontColor">The color of the font used in the component. It is applied to SParagraph, SText and SLink.</param>
 /// <param name="bold">If true, the font will be bold inside the component. It is applied to SParagraph, SText and Slink.</param>
 /// <param name="italic">If true, the font will be italic inside the component. It is applied to SParagraph, SText and Slink.</param>
 /// <param name="underline">An SUnderline used to define the underline of the text inside the component. It is applied to SParagraph, SText and Slink.</param>
 /// <param name="fontSize">The size of the font inside the component. It is applied to SParagraph, SText and Slink.</param>
-/// <param name="superscript">If true, the text inside the component will be superscript. Only works if <paramref name="subscript"> is false. It is applied to SParagraph, SText and Slink.</param>
-/// <param name="subscript">If true, the text inside the component will be subscript. Only works if <paramref name="superscript"> is false. It is applied to SParagraph, SText and Slink.</param>
-/// <param name="shading">The color of the background inside the component. It is applied to SContainer and SParagraph.</param>
-/// <param name="width">The width of the whole component. If not set, the component will use all the size remaining. It is applied to SImage, SContainer. This value is only applied on the current component.</param>
-/// <param name="height">The height of the whole component. If not set, the component will use all the size remaining. It is applied to SImage, SContainer. This value is only applied on the current component.</param>
-/// <param name="topPosition"></param>
-/// <param name="leftPosition"></param>
-/// <param name="resolution"></param>
-/// <param name="verticalAlignment"></param>
+/// <param name="superscript">If true, the text inside the component will be superscript. Only works if <c>subscript</c> is false. It is applied to SParagraph, SText and Slink.</param>
+/// <param name="subscript">If true, the text inside the component will be subscript. Only works if <c>superscript</c> is false. It is applied to SParagraph, SText and Slink.</param>
+/// <param name="shading">The color of the background inside the component. It is applied to SContainer, SColumn, SRow, STable, STableRow, STableCell and SParagraph.</param>
+/// <param name="width">The width of the whole component. If not set, the component will use all the size remaining or the size that it needs. It is applied to all components, except SSection, STableRow and STableCell. This value is only applied on the current component.</param>
+/// <param name="height">The height of the whole component. If not set, the component will use the size it needs. It is applied to all components, except SSection, and STableCell. This value is only applied on the current component.</param>
+/// <param name="topPosition">The position of the component relative to the top of the document. It is applied to SImage.</param>
+/// <param name="leftPosition">The position of the component relative to the left of the document. It is applied to SImage.</param>
+/// <param name="positionType">The type of the position of the component. It is applied to SImage.</param>
+/// <param name="resolution">The resolution of the component. It is applied to SImage.</param>
+/// <param name="verticalAlignment">The vertical aligment of the content inside the component. It determines the alignment relative to the height of the document. It is applied to STableRow and STableCell.</param>
 /// <param name="horizontalAlignment">The alignment of the component(s). It is applied to SParagraph.</param>
-/// <param name="borders">The style of the component's borders. It is applied to SContainer, SImage and SParagraph. In SContainer and SImage, only the Left Border is used to configure the whole border of the component.</param>
-/// <param name="positionType"></param>
+/// <param name="borders">The style of the component's borders. It is applied to SContainer, SImage, SParagraph, SColumn, SRow, STable, STableRow and STableCell. In SContainer and SImage, only the Left Border is used to configure the whole border of the component.</param>
 /// <param name="padding">The style of the component's padding. It is applied to.</param>
-/// <param name="tabstops"></param>
 /// <param name="margin">The style of the component's margin. It is applied to SImage, SContainer. This value is only applied to the current component.</param>
-/// <param name="centered">If true, the content inside the component will be centered and the <paramref name="margin"> will be disconsidered.It is applied to SContainer. This value is only applied to the current component.</param>
+/// <param name="centered">If true, the content inside the component will be centered and the <c>margin</c> will be disconsidered.It is applied to SContainer. This value is only applied to the current component.</param>
 public class SStyle(
     string? name = null,
     Color? fontColor = null,
@@ -87,31 +85,31 @@ public class SStyle(
     /// </summary>
     public bool? Subscript { get; } = subscript;
     /// <summary>
-    /// /// <param name="shading">The color of the background inside the component. It is applied to SContainer and SParagraph.</param>
+    /// The color of the background inside the component. It is applied to SContainer, SColumn, SRow, STable, STableRow, STableCell and SParagraph.
     /// </summary>
     public Color? Shading { get; } = shading;
     /// <summary>
-    /// The width of the whole component. If not set, the component will use all the size remaining. It is applied to SImage, SContainer. This value is only applied on the current component.
+    /// The width of the whole component. If not set, the component will use all the size remaining or the size that it needs. It is applied to all components, except SSection, STableRow and STableCell. This value is only applied on the current component.
     /// </summary>
     public SMeasure? Width { get; } = width;
     /// <summary>
-    /// The height of the whole component. If not set, the component will use all the size remaining. It is applied to SImage, SContainer. This value is only applied on the current component.
+    /// The height of the whole component. If not set, the component will use the size it needs. It is applied to all components, except SSection, and STableCell. This value is only applied on the current component.
     /// </summary>
     public SMeasure? Height { get; } = height;
     /// <summary>
-    ///
+    /// The position of the component relative to the top of the document. It is applied to SImage.
     /// </summary>
     public SMeasure? TopPosition { get; } = topPosition;
     /// <summary>
-    ///
+    /// The position of the component relative to the left of the document. It is applied to SImage.
     /// </summary>
     public SMeasure? LeftPosition { get; } = leftPosition;
     /// <summary>
-    ///
+    /// The resolution of the component. It is applied to SImage.
     /// </summary>
     public double? Resolution { get; } = resolution;
     /// <summary>
-    ///
+    /// The vertical aligment of the content inside the component. It determines the alignment relative to the height of the document. It is applied to STableRow and STableCell.
     /// </summary>
     public SAlignment? VerticalAlignment { get; } = verticalAlignment;
     /// <summary>
@@ -119,11 +117,11 @@ public class SStyle(
     /// </summary>
     public SAlignment? HorizontalAlignment { get; } = horizontalAlignment;
     /// <summary>
-    /// The style of the component's borders. It is applied to SContainer, SImage and SParagraph. In SContainer and SImage, only the Left Border is used to configure the whole border of the component.
+    /// The style of the component's borders. It is applied to SContainer, SImage, SParagraph, SColumn, SRow, STable, STableRow and STableCell. In SContainer and SImage, only the Left Border is used to configure the whole border of the component.
     /// </summary>
     public SBorders? Borders { get; } = borders;
     /// <summary>
-    /// 
+    /// The type of the position of the component. It is applied to SImage.
     /// </summary>
     public SPositionType? PositionType { get; } = positionType;
     /// <summary>
@@ -138,7 +136,7 @@ public class SStyle(
     public SMargin? Margin { get; } = margin;
 
     /// <summary>
-    /// If true, the content inside the component will be centered and the <paramref name="margin"> will be disconsidered.It is applied to SContainer. This value is only applied to the current component.
+    /// If true, the content inside the component will be centered and the <c>margin</c> will be disconsidered. It is applied to SContainer. This value is only applied to the current component.
     /// </summary>
     public bool? Centered { get; } = centered;
 
@@ -155,13 +153,13 @@ public class SStyle(
             Shading ?? style?.Shading,
             Width,
             Height,
-            TopPosition ?? style?.TopPosition,
-            LeftPosition ?? style?.LeftPosition,
+            TopPosition,
+            LeftPosition,
             Resolution ?? style?.Resolution,
             VerticalAlignment ?? style?.VerticalAlignment,
             HorizontalAlignment ?? style?.HorizontalAlignment,
-            Borders ?? style?.Borders,
-            PositionType ?? style?.PositionType,
+            Borders,
+            PositionType,
             Padding,
             // Tabstops ?? style?.Tabstops,
             Margin,

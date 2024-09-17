@@ -36,48 +36,7 @@ internal static class ForImage {
             p.AddBookmark("#" + image.Name, false);
         }
 
-        var x = image.FathersStyle!.Dimensions!.X;
-        var y = image.FathersStyle!.Dimensions!.Y;
-
-        var crop = image.CropImage;
-        var height = style.Height ?? new SMeasure(points: y);
-        var width = style.Width ?? new SMeasure(points: x);
-        var h = height.Value;
-        var w = width.Value;
-
-        if (crop != null) {
-            mdImage.PictureFormat.CropTop = SMetricsUtil.GetUnitValue(crop.FromTop ?? new SMeasure(0), h);
-            mdImage.PictureFormat.CropBottom = SMetricsUtil.GetUnitValue(crop.FromBottom ?? new SMeasure(0), h);
-            
-            mdImage.PictureFormat.CropLeft = SMetricsUtil.GetUnitValue(crop.FromLeft ?? new SMeasure(0), w);
-            mdImage.PictureFormat.CropRight = SMetricsUtil.GetUnitValue(crop.FromRight ?? new SMeasure(0), w);
-        }
-
-        
-
-        mdImage.WrapFormat.Style = 
-            style.PositionType == SPositionType.Fixed ?
-            WrapStyle.None :
-            WrapStyle.TopBottom;
-        mdImage.RelativeHorizontal = 
-            style.PositionType == SPositionType.Fixed ?
-            RelativeHorizontal.Page :
-            RelativeHorizontal.Column;
-        mdImage.RelativeVertical = 
-            style.PositionType == SPositionType.Fixed ?
-            RelativeVertical.Page :
-            RelativeVertical.Paragraph;
-
-        if (style.LeftPosition != null)
-        {
-            mdImage.Left = SMetricsUtil.GetUnitValue(style.LeftPosition, x);
-        }
-
-        if (style.TopPosition != null)
-        {
-            mdImage.Top = SMetricsUtil.GetUnitValue(style.TopPosition, y);
-        }
-        mdImage.Resolution = style.Resolution ?? 72;
+        SetWidthAndHeight(mdImage, style, image.FathersStyle!.Dimensions!);
 
         SBorder? border = style.Borders?.Left;
 
@@ -95,30 +54,69 @@ internal static class ForImage {
                 _ => DashStyle.Solid
             };
             mdImage.LineFormat.Visible = border.Visible ?? true;
-            var borderWidth = SMetricsUtil.GetUnitValue(border.Width ?? new SMeasure(1), w);
+            var borderWidth = SMetricsUtil.GetUnitValue(border.Width ?? new SMeasure(1), style.Dimensions!.X);
             mdImage.LineFormat.Width = borderWidth;
-            width = new SMeasure(width.Value - (2 * borderWidth.Point));
-            height = new SMeasure(height.Value - (2 * borderWidth.Point));
+            style.Dimensions!.X -= 2 * borderWidth.Point;
+            style.Dimensions!.Y -= 2 * borderWidth.Point;
         }
+
+        var crop = image.CropImage;
+        if (crop != null) {
+            mdImage.PictureFormat.CropTop = SMetricsUtil.GetUnitValue(crop.FromTop ?? new SMeasure(0), style.Dimensions!.Y);
+            mdImage.PictureFormat.CropBottom = SMetricsUtil.GetUnitValue(crop.FromBottom ?? new SMeasure(0), style.Dimensions!.Y);
+            
+            mdImage.PictureFormat.CropLeft = SMetricsUtil.GetUnitValue(crop.FromLeft ?? new SMeasure(0), style.Dimensions!.X);
+            mdImage.PictureFormat.CropRight = SMetricsUtil.GetUnitValue(crop.FromRight ?? new SMeasure(0), style.Dimensions!.X);
+        }
+
+        mdImage.WrapFormat.Style = 
+            style.PositionType == SPositionType.Fixed ?
+            WrapStyle.None :
+            WrapStyle.TopBottom;
+        mdImage.RelativeHorizontal = 
+            style.PositionType == SPositionType.Fixed ?
+            RelativeHorizontal.Page :
+            RelativeHorizontal.Column;
+        mdImage.RelativeVertical = 
+            style.PositionType == SPositionType.Fixed ?
+            RelativeVertical.Page :
+            RelativeVertical.Paragraph;
+
+        if (style.LeftPosition != null)
+        {
+            mdImage.Left = SMetricsUtil.GetUnitValue(style.LeftPosition, style.Dimensions!.X);
+        }
+
+        if (style.TopPosition != null)
+        {
+            mdImage.Top = SMetricsUtil.GetUnitValue(style.TopPosition, style.Dimensions!.Y);
+        }
+
+        mdImage.Resolution = style.Resolution ?? 72;
         
         SMargin? margin = style.Margin;
 
         if (margin != null) {
-            mdImage.WrapFormat.DistanceBottom = SMetricsUtil.GetUnitValue(margin.Bottom ?? new SMeasure(0), h);
-            mdImage.WrapFormat.DistanceTop = SMetricsUtil.GetUnitValue(margin.Top ?? new SMeasure(0), h);
-            mdImage.WrapFormat.DistanceLeft = SMetricsUtil.GetUnitValue(margin.Left ?? new SMeasure(0), w);
-            mdImage.WrapFormat.DistanceRight = SMetricsUtil.GetUnitValue(margin.Right ?? new SMeasure(0), w);
+            mdImage.WrapFormat.DistanceBottom = SMetricsUtil.GetUnitValue(margin.Bottom ?? new SMeasure(0), style.Dimensions!.Y);
+            mdImage.WrapFormat.DistanceTop = SMetricsUtil.GetUnitValue(margin.Top ?? new SMeasure(0), style.Dimensions!.Y);
+            mdImage.WrapFormat.DistanceLeft = SMetricsUtil.GetUnitValue(margin.Left ?? new SMeasure(0), style.Dimensions!.X);
+            mdImage.WrapFormat.DistanceRight = SMetricsUtil.GetUnitValue(margin.Right ?? new SMeasure(0), style.Dimensions!.X);
+        }
+    }
+
+    internal static void SetWidthAndHeight(Image image, SStyle style, SDimensions dimensions) {
+        if (style.Width != null) {
+            image.Width = SMetricsUtil.GetUnitValue(style.Width, dimensions.X);
+        } else {
+            image.Width = Unit.FromPoint(dimensions.X);
         }
 
-        if (style.Width != null)
-        {
-            mdImage.Width = SMetricsUtil.GetUnitValue(style.Width, x);
-        }
-        if (style.Height != null)
-        {
-            mdImage.Height = SMetricsUtil.GetUnitValue(style.Height, y);
+        if (style.Height != null) {
+            image.Height = SMetricsUtil.GetUnitValue(style.Height, dimensions.Y);
+        } else {
+            image.Height = Unit.FromPoint(dimensions.Y);
         }
 
-        style.Dimensions = new SDimensions(height.Value, width.Value);
+        style.Dimensions = new SDimensions(image.Height.Point, image.Width.Point);
     }
 }

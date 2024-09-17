@@ -32,22 +32,19 @@ public static class ForColumnRow {
             throw new Exception("An SColumn can only be inside an SSection, SContainer or SRow");
         }
 
+        SetWidthAndHeight(tf, style, column.FathersStyle!.Dimensions!);
+
         if (style.Borders != null) { 
             var (x, y) = SetBorders(table, style, column.FathersStyle!.Dimensions!);
-            style.Dimensions = new(
-                column.FathersStyle!.Dimensions!.Y - y,
-                column.FathersStyle!.Dimensions!.X - x
-            );
-        } else {
-            style.Dimensions = column.FathersStyle!.Dimensions;
+            style.Dimensions!.X -= x;
+            style.Dimensions!.Y -= y;
+
+            // Maybe we will need to subtract from the height and width
         }
         
-        SetWidthAndHeight(tf, style, column.FathersStyle!.Dimensions!);
 
         // Format
         SetFormat(table, style, column.FathersStyle!.Dimensions!);
-
-        // Padding
 
         // Shading
         SetShading(table, style);
@@ -90,22 +87,19 @@ public static class ForColumnRow {
             throw new Exception("An SColumn can only be inside an SSection, SContainer or SRow");
         }
 
+        SetWidthAndHeight(tf, style, row.FathersStyle!.Dimensions!);
+
         // Borders
         if (style.Borders != null) { 
             var (x,y) = SetBorders(table, style, row.FathersStyle!.Dimensions!);
-            row.FathersStyle!.Dimensions!.X -= x;
-            row.FathersStyle!.Dimensions!.Y -= y;
-        } else {
-            style.Dimensions = row.FathersStyle!.Dimensions;
+            style.Dimensions!.X -= x;
+            style.Dimensions!.Y -= y;
+
+            // Maybe we need to subtract from the height and width
         }
-        
-        SetWidthAndHeight(tf, style, row.FathersStyle!.Dimensions!);
 
         // Format
         SetFormat(table, style, row.FathersStyle!.Dimensions!);
-
-
-        // Padding
 
         // Shading
         SetShading(table, style);
