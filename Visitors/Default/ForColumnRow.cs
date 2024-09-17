@@ -11,8 +11,7 @@ namespace PDFScaffold.Visitors.Default;
 public static class ForColumnRow {
 
     public static void DoForColumn(this SVisitor visitor, SColumn column) {
-        SStyle style = visitor.GetStyle(column.Style, column.UseStyle) ?? new SStyle();
-        style = style.Merge(column.FathersStyle);
+        SStyle style = visitor.GetOrCreateStyle(column.Style, column.FathersStyle!, column.UseStyle);
 
         var father = visitor.VisitedObjects.Peek();
         TextFrame tf;
@@ -32,7 +31,7 @@ public static class ForColumnRow {
             throw new Exception("An SColumn can only be inside an SSection, SContainer or SRow");
         }
 
-        style.Dimensions = new(column.FathersStyle!.Dimensions!.Y, column.FathersStyle!.Dimensions!.X);
+        style.Dimensions = column.FathersStyle!.Dimensions!.Copy();
 
         SetWidthAndHeight(tf, style, column.FathersStyle!.Dimensions!);
 
