@@ -1,3 +1,4 @@
+using PDFScaffold.Metrics;
 using PDFScaffold.Scaffold;
 using PDFScaffold.Styling;
 using PDFScaffold.Visitors;
@@ -23,6 +24,7 @@ public class SContainer(
     /// The SSectionElement contained inside the SContainer.
     /// </summary>
     public SSectionElement Content { get; } = content;
+
 
     public override void Accept(IPdfScaffoldVisitor visitor) {
         visitor.ForContainer(this);

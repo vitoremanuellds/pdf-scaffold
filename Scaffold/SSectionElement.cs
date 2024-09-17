@@ -1,3 +1,4 @@
+using PDFScaffold.Metrics;
 using PDFScaffold.Styling;
 using PDFScaffold.Visitors;
 
@@ -26,6 +27,9 @@ public abstract class SSectionElement(SStyle? style, string? useStyle, string? n
     /// </summary>
     public string? Name { get; } = name;
     internal (int, int) TablePos { get; set; } = (-1, -1);
+
+    internal SDimensions? Dimensions { get; set; }
+
 
     public abstract void Accept(IPdfScaffoldVisitor visitor);
     // {

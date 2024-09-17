@@ -12,7 +12,7 @@ public static class ForColumnRow {
 
     public static void DoForColumn(this SVisitor visitor, SColumn column) {
         SStyle style = visitor.GetStyle(column.Style, column.UseStyle) ?? new SStyle();
-        style.Merge(column.FathersStyle);
+        style = style.Merge(column.FathersStyle);
 
         var father = visitor.VisitedObjects.Peek();
         TextFrame tf;
@@ -31,6 +31,8 @@ public static class ForColumnRow {
         } else {
             throw new Exception("An SColumn can only be inside an SSection, SContainer or SRow");
         }
+
+        style.Dimensions = new(column.FathersStyle!.Dimensions!.Y, column.FathersStyle!.Dimensions!.X);
 
         SetWidthAndHeight(tf, style, column.FathersStyle!.Dimensions!);
 
@@ -63,11 +65,13 @@ public static class ForColumnRow {
 
             visitor.VisitedObjects.Pop();
         }
+
+        column.Dimensions = style.Dimensions;
     }
 
     public static void DoForRow(this SVisitor visitor, SRow row) {
         SStyle style = visitor.GetStyle(row.Style, row.UseStyle) ?? new SStyle();
-        style.Merge(row.FathersStyle);
+        style = style.Merge(row.FathersStyle);
 
         var father = visitor.VisitedObjects.Peek();
         TextFrame tf;
@@ -86,8 +90,10 @@ public static class ForColumnRow {
         } else {
             throw new Exception("An SColumn can only be inside an SSection, SContainer or SRow");
         }
+        
+        style.Dimensions = new(row.FathersStyle!.Dimensions!.Y, row.FathersStyle!.Dimensions!.X);
 
-        SetWidthAndHeight(tf, style, row.FathersStyle!.Dimensions!);
+        SetWidthAndHeight(tf, style, row.FathersStyle!.Dimensions!, true);
 
         // Borders
         if (style.Borders != null) { 
@@ -107,6 +113,9 @@ public static class ForColumnRow {
         table.GenerateColumns(row.Elements.Count);
         var tRow = table.AddRow();
 
+        var customWidths = 0.0;
+        var customWidthsCount = 0;
+
         for (int i = 0; i < row.Elements.Count; i++)
         {
             var cell = tRow.Cells[i];
@@ -116,9 +125,23 @@ public static class ForColumnRow {
             var el = row.Elements.ElementAt(i);
             el.FathersStyle = style;
             el.Accept(visitor);
+            if (el.Style?.Width != null) {
+                table.Columns[i].Width = el.Dimensions!.X;
+                customWidths += el.Dimensions!.X;
+                customWidthsCount += 1;
+            }
 
             visitor.VisitedObjects.Pop();
         }
+
+        for (int i = 0; i < row.Elements.Count; i++) {
+            var el = row.Elements.ElementAt(i);
+            if (el.Style?.Width == null) {
+                table.Columns[i].Width = (style.Dimensions.X - customWidths) / (row.Elements.Count - customWidthsCount);
+            }
+        }
+
+        row.Dimensions = style.Dimensions;
     }
 
     internal static void SetFormat(Table table, SStyle style, SDimensions dimensions) {
@@ -128,20 +151,22 @@ public static class ForColumnRow {
         if (style.FontSize != null) table.Format.Font.Size = SMetricsUtil.GetUnitValue(style.FontSize, dimensions.Y);
     }
 
-    internal static void SetWidthAndHeight(TextFrame tf, SStyle style, SDimensions dimensions) {
+    internal static void SetWidthAndHeight(TextFrame tf, SStyle style, SDimensions dimensions, bool isRow = false) {
         if (style.Width != null) {
             tf.Width = SMetricsUtil.GetUnitValue(style.Width, dimensions.X);
-        } else {
-            tf.Width = Unit.FromPoint(dimensions.X);
-        }
+            style.Dimensions!.X = tf.Width.Point;
+        } 
+        // else if (!isRow) {
+        //     tf.Width = Unit.FromPoint(dimensions.X);
+        // }
 
         if (style.Height != null) {
             tf.Height = SMetricsUtil.GetUnitValue(style.Height, dimensions.Y);
-        } else {
-            tf.Height = Unit.FromPoint(dimensions.Y);
-        }
-
-        style.Dimensions = new SDimensions(tf.Height.Point, tf.Width.Point);
+            style.Dimensions!.X = tf.Height.Point;
+        } 
+        // else if (!isRow) {
+        //     tf.Height = Unit.FromPoint(dimensions.Y);
+        // }
     }
 
     internal static (double, double) SetBorders(Table table, SStyle style, SDimensions dimensions) {

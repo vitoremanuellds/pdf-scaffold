@@ -12,7 +12,7 @@ public static class ForContainer {
 
     public static void DoForContainer(this SVisitor visitor, SContainer container) {
         SStyle style = visitor.GetStyle(container.Style, container.UseStyle) ?? new SStyle();
-        style.Merge(container.FathersStyle);
+        style = style.Merge(container.FathersStyle);
 
         TextFrame textFrame;
         var father = visitor.VisitedObjects.Peek();
@@ -85,10 +85,10 @@ public static class ForContainer {
         container.Content.Accept(visitor);
 
         if (style.Centered ?? false) {
-            double sonX = container.Content.Style!.Dimensions!.X;
-            double sonY = container.Content.Style!.Dimensions!.Y;
-            double horizontalMargins = (availableSpace.X - sonX) / 2;
-            double verticalMargins = (availableSpace.Y - sonY) / 2;
+            double sonX = container.Content.Dimensions!.X;
+            double sonY = container.Content.Dimensions!.Y;
+            double horizontalMargins = (textFrame.Width.Point - sonX) / 2;
+            double verticalMargins = (textFrame.Height.Point - sonY) / 2;
             textFrame.MarginLeft = Unit.FromPoint(horizontalMargins);
             textFrame.MarginRight = Unit.FromPoint(horizontalMargins);
             textFrame.MarginTop = Unit.FromPoint(verticalMargins);
@@ -96,6 +96,8 @@ public static class ForContainer {
         }
 
         visitor.VisitedObjects.Pop();
+
+        container.Dimensions = style.Dimensions;
     }
 
 

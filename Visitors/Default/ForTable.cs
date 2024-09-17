@@ -12,7 +12,7 @@ public static class ForTable {
 
     public static void DoForTable(this SVisitor visitor, STable table) {
         SStyle style = visitor.GetStyle(table.Style, table.UseStyle) ?? new SStyle();
-        style.Merge(table.FathersStyle);
+        style = style.Merge(table.FathersStyle);
 
         var father = visitor.VisitedObjects.Peek();
         TextFrame tf;
@@ -94,6 +94,8 @@ public static class ForTable {
             row.FathersStyle = style;
             row.Accept(visitor);
         }
+
+        table.Dimensions = style.Dimensions;
     }
 
     public static (int, int) TableDimensions(ICollection<STableRow> rows)
@@ -180,7 +182,7 @@ public static class ForTable {
 
     public static void DoForTableRow(this SVisitor visitor, STableRow row) {
         SStyle style = visitor.GetStyle(row.Style, row.UseStyle) ?? new SStyle();
-        style.Merge(row.FathersStyle);
+        style = style.Merge(row.FathersStyle);
 
         var father = visitor.VisitedObjects.Peek();
         Row r;
@@ -289,7 +291,7 @@ public static class ForTable {
 
     public static void DoForTableCell(this SVisitor visitor, STableCell cell) {
         SStyle style = visitor.GetStyle(cell.Style, cell.UseStyle) ?? new SStyle();
-        style.Merge(cell.FathersStyle);
+        style = style.Merge(cell.FathersStyle);
 
         var father = visitor.VisitedObjects.Peek();
         TextFrame tf;

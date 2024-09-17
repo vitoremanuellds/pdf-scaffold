@@ -25,7 +25,7 @@ namespace PDFScaffold.Styling;
 /// <param name="horizontalAlignment">The alignment of the component(s). It is applied to SParagraph.</param>
 /// <param name="borders">The style of the component's borders. It is applied to SContainer, SImage, SParagraph, SColumn, SRow, STable, STableRow and STableCell. In SContainer and SImage, only the Left Border is used to configure the whole border of the component.</param>
 /// <param name="padding">The style of the component's padding. It is applied to.</param>
-/// <param name="margin">The style of the component's margin. It is applied to SImage, SContainer. This value is only applied to the current component.</param>
+/// <param name="margin">The style of the component's margin. It is applied to SContainer. This value is only applied to the current component.</param>
 /// <param name="centered">If true, the content inside the component will be centered and the <c>margin</c> will be disconsidered.It is applied to SContainer. This value is only applied to the current component.</param>
 public class SStyle(
     string? name = null,
@@ -39,13 +39,13 @@ public class SStyle(
     Color? shading = null,
     SMeasure? width = null,
     SMeasure? height = null,
+    SPositionType? positionType = null,
     SMeasure? topPosition = null,
     SMeasure? leftPosition = null,
     double? resolution = null,
     SAlignment? verticalAlignment = null,
     SAlignment? horizontalAlignment = null,
     SBorders? borders = null,
-    SPositionType? positionType = null,
     SPadding? padding = null,
     // ICollection<STabStop>? tabstops = null,
     SMargin? margin = null,
@@ -131,7 +131,7 @@ public class SStyle(
     // public ICollection<STabStop>? Tabstops { get; } = tabstops;
 
     /// <summary>
-    /// The style of the component's margin. It is applied to SImage, SContainer. This value is only applied to the current component.
+    /// The style of the component's margin. It is applied to SContainer. This value is only applied to the current component.
     /// </summary>
     public SMargin? Margin { get; } = margin;
 
@@ -153,13 +153,13 @@ public class SStyle(
             Shading ?? style?.Shading,
             Width,
             Height,
+            PositionType,
             TopPosition,
             LeftPosition,
             Resolution ?? style?.Resolution,
             VerticalAlignment ?? style?.VerticalAlignment,
             HorizontalAlignment ?? style?.HorizontalAlignment,
             Borders,
-            PositionType,
             Padding,
             // Tabstops ?? style?.Tabstops,
             Margin,

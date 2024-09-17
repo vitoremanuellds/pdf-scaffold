@@ -12,28 +12,33 @@ internal static class ForImage {
 
     public static void DoForImage(this SVisitor visitor, SImage image) {
         SStyle style = visitor.GetStyle(image.Style, image.UseStyle) ?? new SStyle();
-        style.Merge(image.FathersStyle);
+        style = style.Merge(image.FathersStyle);
 
-        Paragraph p;
+        TextFrame tf;
         Image mdImage;
 
         object father = visitor.VisitedObjects.Peek();
 
         if (father != null && father is Section section) {
-            p = section.AddParagraph();
-            mdImage = p.AddImage(image.Path);
+            tf = section.AddTextFrame();
+            mdImage = section.AddImage(image.Path);
         } else if (father is Cell cell) {
-            p = cell.AddParagraph();
-            mdImage = p.AddImage(image.Path);
+            tf = cell.AddTextFrame();
+            mdImage = cell.AddImage(image.Path);
         } else if (father is TextFrame textFrame) {
-            p = textFrame.AddParagraph();
-            mdImage = p.AddImage(image.Path);
+            var table = textFrame.AddTable();
+            table.AddColumn();
+            tf = table.AddRow().Cells[0].AddTextFrame();
+            mdImage = textFrame.AddImage(image.Path);
         } else {
             throw new Exception("An SImage can not be used outside an SSection, SColumn, SRow, SContainer and STableCell");
         }
 
+        tf.Width = Unit.FromPoint(1);
+        tf.Height = Unit.FromPoint(1);
+
         if (image.Name != null) {
-            p.AddBookmark("#" + image.Name, false);
+            SetBookmark(style, tf);
         }
 
         SetWidthAndHeight(mdImage, style, image.FathersStyle!.Dimensions!);
@@ -102,6 +107,8 @@ internal static class ForImage {
             mdImage.WrapFormat.DistanceLeft = SMetricsUtil.GetUnitValue(margin.Left ?? new SMeasure(0), style.Dimensions!.X);
             mdImage.WrapFormat.DistanceRight = SMetricsUtil.GetUnitValue(margin.Right ?? new SMeasure(0), style.Dimensions!.X);
         }
+
+        image.Dimensions = style.Dimensions;
     }
 
     internal static void SetWidthAndHeight(Image image, SStyle style, SDimensions dimensions) {
@@ -118,5 +125,9 @@ internal static class ForImage {
         }
 
         style.Dimensions = new SDimensions(image.Height.Point, image.Width.Point);
+    }
+
+    internal static void SetBookmark(SStyle style, TextFrame tf) {
+        tf.AddParagraph().AddBookmark("#" + style.Name!);
     }
 }

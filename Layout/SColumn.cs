@@ -1,3 +1,4 @@
+using PDFScaffold.Metrics;
 using PDFScaffold.Scaffold;
 using PDFScaffold.Styling;
 using PDFScaffold.Visitors;

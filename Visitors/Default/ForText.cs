@@ -11,17 +11,23 @@ public static class ForText {
 
     public static void DoForParagraph(this SVisitor visitor, SParagraph paragraph) {
         SStyle style = visitor.GetStyle(paragraph.Style, paragraph.UseStyle) ?? new SStyle();
-        style.Merge(paragraph.FathersStyle);
+        style = style.Merge(paragraph.FathersStyle);
 
         var father = visitor.VisitedObjects.Peek();
+        TextFrame tf;
         Paragraph p;
 
         if (father is Section section) {
-            p = section.AddParagraph();
+            tf = section.AddTextFrame();
+            p = tf.AddParagraph();
         } else if (father is Cell cell) {
-            p = cell.AddParagraph();
+            tf = cell.AddTextFrame();
+            p = tf.AddParagraph();
         } else if (father is TextFrame frame) {
-            p = frame.AddParagraph();
+            var table = frame.AddTable();
+            table.AddColumn();
+            tf = table.AddRow().Cells[0].AddTextFrame();
+            p = tf.AddParagraph();
         } else {
             throw new Exception("A paragraph can not be placed outside a SSection, SColumn, SRow or SContainer");
         }
@@ -29,6 +35,8 @@ public static class ForText {
         if (paragraph.Name != null) {
             p.AddBookmark('#' + paragraph.Name, false);
         }
+
+        SetWidthAndHeight(tf, style, paragraph.FathersStyle!.Dimensions!);
 
         if (style.Borders != null) {
             var (x, y) = SetBorders(paragraph, p, style);
@@ -50,11 +58,12 @@ public static class ForText {
         }
 
         visitor.VisitedObjects.Pop();
+        paragraph.Dimensions = style.Dimensions;
     }
 
     public static void DoForText(this SVisitor visitor, SText text) {
         SStyle style = visitor.GetStyle(text.Style, text.UseStyle) ?? new SStyle();
-        style.Merge(text.FathersStyle);
+        style = style.Merge(text.FathersStyle);
 
         var father = visitor.VisitedObjects.Peek();
 
@@ -110,7 +119,7 @@ public static class ForText {
 
     public static void DoForLink(this SVisitor visitor, SLink link) {
         SStyle style = visitor.GetStyle(link.Style, link.UseStyle) ?? new SStyle();
-        style.Merge(link.FathersStyle);
+        style = style.Merge(link.FathersStyle);
 
         var father = visitor.VisitedObjects.Peek();
 
@@ -250,7 +259,7 @@ public static class ForText {
 
     public static void DoForHeading(this SVisitor visitor, SHeading heading) {
         SStyle style = visitor.GetStyle(heading.Style, heading.UseStyle) ?? new SStyle();
-        style.Merge(heading.FathersStyle);
+        style = style.Merge(heading.FathersStyle);
 
         Paragraph p;
         TextFrame tf;
@@ -282,6 +291,8 @@ public static class ForText {
         }
 
         // p.Format;
+        p.Format.Font.Size = SHeading.GetFontSize(heading.Level);
+        p.Format.Font.Bold = true;
         SetFormat(p.Format, style, heading.FathersStyle!.Dimensions!);
 
         SetWidthAndHeight(tf, style, heading.FathersStyle!.Dimensions!);
@@ -313,6 +324,7 @@ public static class ForText {
         }
 
         visitor.VisitedObjects.Pop();
+        heading.Dimensions = style.Dimensions;
     }
 
     internal static void SetFormat(ParagraphFormat format, SStyle style, SDimensions dimensions) {
@@ -353,8 +365,6 @@ public static class ForText {
 
         if (style.Height != null) {
             tf.Height = SMetricsUtil.GetUnitValue(style.Height, dimensions.Y);
-        } else {
-            tf.Height = Unit.FromPoint(dimensions.Y);
         }
 
         style.Dimensions = new SDimensions(tf.Height.Point, tf.Width.Point);

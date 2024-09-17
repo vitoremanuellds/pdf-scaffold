@@ -1,3 +1,4 @@
+using PDFScaffold.Metrics;
 using PDFScaffold.Styling;
 using PDFScaffold.Visitors;
 
@@ -50,6 +51,8 @@ public class SSection(
     /// he list of elements inside of this section. It can be null.
     /// </summary>
     public ICollection<SSectionElement>? Elements { get; } = elements;
+
+    internal SDimensions? Dimensions { get; set; }
 
     public void Accept(IPdfScaffoldVisitor visitor)
     {

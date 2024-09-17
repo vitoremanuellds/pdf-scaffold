@@ -1,3 +1,4 @@
+using PDFScaffold.Metrics;
 using PDFScaffold.Scaffold;
 using PDFScaffold.Styling;
 using PDFScaffold.Visitors;
@@ -25,6 +26,7 @@ public class SRow(
     public ICollection<SSectionElement> Elements { get; } = elements;
     // internal (int, int) ColSpan {get; set;} = (0, 0);
     // internal (int, int) RowSpan {get; set;} = (0, 0);
+
 
     public override void Accept(IPdfScaffoldVisitor visitor)
     {
