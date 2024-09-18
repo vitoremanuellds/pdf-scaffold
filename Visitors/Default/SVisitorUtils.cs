@@ -4,6 +4,8 @@ using MigraDoc.DocumentObjectModel.Tables;
 using PDFScaffold.Images;
 using PDFScaffold.Metrics;
 using PDFScaffold.Styling;
+using PDFScaffold.Texts;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace PDFScaffold.Visitors.Default;
 
@@ -67,18 +69,99 @@ internal static class SVisitorUtils
         }
     }
 
-    internal static void SetFormat(ParagraphFormat format, SStyle style, SDimensions dimensions)
+    //internal static void SetFormat(ParagraphFormat format, SStyle style, SDimensions dimensions)
+    //{
+    //    format.Font.Bold = style.Bold ?? false;
+    //    format.Font.Italic = style.Italic ?? false;
+    //    format.Font.Color = style.FontColor ?? Colors.Black;
+    //    if (style.FontSize != null)
+    //    {
+    //        format.Font.Size = SMetricsUtil.GetUnitValue(style.FontSize, dimensions.Y);
+    //    }
+    //}
+
+    internal static void SetFormat(FormattedText formattedText, SStyle style, SDimensions dimensions, bool isLink = false)
     {
-        format.Font.Bold = style.Bold ?? false;
-        format.Font.Italic = style.Italic ?? false;
+        formattedText.Bold = style.Bold ?? false;
+        formattedText.Italic = style.Italic ?? false;
+        formattedText.Color = style.FontColor ?? Colors.BlueViolet;
+
+        switch (style.Underline)
+        {
+            case SUnderline.None:
+                formattedText.Underline = Underline.None;
+                break;
+            case SUnderline.Dash:
+                formattedText.Underline = Underline.Dash;
+                break;
+            case SUnderline.DotDash:
+                formattedText.Underline = Underline.DotDash;
+                break;
+            case SUnderline.DotDotDash:
+                formattedText.Underline = Underline.DotDotDash;
+                break;
+            case SUnderline.Dotted:
+                formattedText.Underline = Underline.Dotted;
+                break;
+            case SUnderline.Single:
+                formattedText.Underline = Underline.Single;
+                break;
+            case SUnderline.OnWords:
+                formattedText.Underline = Underline.Words;
+                break;
+        }
+
+        if (style.FontSize != null)
+        {
+            formattedText.Size = SMetricsUtil.GetUnitValue(style.FontSize, dimensions.X);
+        }
+        formattedText.Subscript = (style.Subscript ?? false) && !(style.Superscript ?? false);
+        formattedText.Superscript = (style.Superscript ?? false) && !(style.Subscript ?? false);
+    }
+
+    internal static void SetFormat(ParagraphFormat format, SStyle style, SDimensions dimensions, bool isHeading = false, int level = 1)
+    {
         format.Font.Color = style.FontColor ?? Colors.Black;
+        format.Font.Bold = style.Bold ?? true;
+        format.Font.Italic = style.Italic ?? false;
+        format.Font.Underline = SUnderlineUtils.GetUnderline(style.Underline ?? SUnderline.None);
         if (style.FontSize != null)
         {
             format.Font.Size = SMetricsUtil.GetUnitValue(style.FontSize, dimensions.Y);
+        } else if (isHeading)
+        {
+            format.Font.Size = SHeading.GetFontSize(level);
+            format.OutlineLevel = level switch
+            {
+                1 => OutlineLevel.Level1,
+                2 => OutlineLevel.Level2,
+                3 => OutlineLevel.Level3,
+                4 => OutlineLevel.Level4,
+                5 => OutlineLevel.Level5,
+                6 => OutlineLevel.Level6,
+                _ => OutlineLevel.Level1,
+            };
+        }
+        format.Font.Subscript = (style.Subscript ?? false) && !(style.Superscript ?? false);
+        format.Font.Superscript = (style.Superscript ?? false) && !(style.Subscript ?? false);
+        switch (style.HorizontalAlignment)
+        {
+            case SAlignment.Start:
+                format.Alignment = ParagraphAlignment.Left;
+                break;
+            case SAlignment.Center:
+                format.Alignment = ParagraphAlignment.Center;
+                break;
+            case SAlignment.End:
+                format.Alignment = ParagraphAlignment.Right;
+                break;
+            case SAlignment.Justified:
+                format.Alignment = ParagraphAlignment.Justify;
+                break;
         }
     }
 
-    internal static void SetTableBorders(Borders borders, SStyle style, SDimensions dimensions)
+    internal static void SetBorders(Borders borders, SStyle style, SDimensions dimensions)
     {
         if (style.Borders != null)
         {
@@ -87,7 +170,7 @@ internal static class SVisitorUtils
 
             if (style.Borders!.Left != null)
             {
-                SetTableBorder(dimensions, style.Borders.Left, borders.Left, true);
+                SetBorder(dimensions, style.Borders.Left, borders.Left, true);
                 borders.DistanceFromLeft = SMetricsUtil.GetUnitValue(style.Borders.Left.DistanceFromContent ?? new SMeasure(0), dimensions.X);
                 bordersWidth += (style.Borders.Left.Width ?? new SMeasure(0)).Value;
                 bordersWidth += borders.DistanceFromLeft.Point;
@@ -95,7 +178,7 @@ internal static class SVisitorUtils
 
             if (style.Borders!.Right != null)
             {
-                SetTableBorder(dimensions, style.Borders.Right, borders.Right, true);
+                SetBorder(dimensions, style.Borders.Right, borders.Right, true);
                 borders.DistanceFromRight = SMetricsUtil.GetUnitValue(style.Borders.Right.DistanceFromContent ?? new SMeasure(0), dimensions.X);
                 bordersWidth += (style.Borders.Right.Width ?? new SMeasure(0)).Value;
                 bordersWidth += borders.DistanceFromRight.Point;
@@ -103,7 +186,7 @@ internal static class SVisitorUtils
 
             if (style.Borders!.Bottom != null)
             {
-                SetTableBorder(dimensions, style.Borders.Bottom, borders.Bottom, false);
+                SetBorder(dimensions, style.Borders.Bottom, borders.Bottom, false);
                 borders.DistanceFromBottom = SMetricsUtil.GetUnitValue(style.Borders.Bottom.DistanceFromContent ?? new SMeasure(0), dimensions.Y);
                 bordersHeight += (style.Borders.Bottom.Width ?? new SMeasure(0)).Value;
                 bordersHeight += borders.DistanceFromBottom.Point;
@@ -111,7 +194,7 @@ internal static class SVisitorUtils
 
             if (style.Borders!.Top != null)
             {
-                SetTableBorder(dimensions, style.Borders.Top, borders.Top, false);
+                SetBorder(dimensions, style.Borders.Top, borders.Top, false);
                 borders.DistanceFromTop = SMetricsUtil.GetUnitValue(style.Borders.Top.DistanceFromContent ?? new SMeasure(0), dimensions.Y);
                 bordersHeight += (style.Borders.Top.Width ?? new SMeasure(0)).Value;
                 bordersHeight += borders.DistanceFromTop.Point;
@@ -125,7 +208,7 @@ internal static class SVisitorUtils
         }
     }
 
-    internal static void SetTableBorder(SDimensions dimensions, SBorder border, Border b, bool horizontal)
+    internal static void SetBorder(SDimensions dimensions, SBorder border, Border b, bool horizontal)
     {
         b.Color = border.Color ?? Colors.Black;
         switch (border.BorderType)
@@ -156,7 +239,7 @@ internal static class SVisitorUtils
         b.Width = border.Width != null ? SMetricsUtil.GetUnitValue(border.Width, horizontal ? dimensions.X : dimensions.Y) : Unit.FromPoint(1);
     }
 
-    internal static void SetContainerAndImageBorder(LineFormat lf, SStyle style)
+    internal static void SetBorder(LineFormat lf, SStyle style)
     {
         if (style.Borders != null)
         {
@@ -188,24 +271,40 @@ internal static class SVisitorUtils
         ff.Color = style.Shading ?? Color.Empty;
     }
 
-    internal static void SetBookmark(Cell cell, SStyle style)
+    internal static void SetBookmark(Cell cell, string? name)
     {
-        if (style.Name != null)
+        if (name != null)
         {
             var tf = cell.AddTextFrame();
             tf.Width = 0;
             tf.Height = 0;
-            tf.AddParagraph().AddBookmark("#" + style.Name);
+            tf.AddParagraph().AddBookmark("#" + name);
         }
     }
 
-    internal static void SetBookmark(TextFrame tf, SStyle style)
+    internal static void SetBookmark(TextFrame tf, string? name)
     {
-        if (style.Name != null)
+        if (name != null)
         {
             tf.Width = 0;
             tf.Height = 0;
-            tf.AddParagraph().AddBookmark("#" + style.Name);
+            tf.AddParagraph().AddBookmark("#" + name);
+        }
+    }
+
+    internal static void SetBookmark(Hyperlink link, string? name)
+    {
+        if (name != null)
+        {
+            link.AddBookmark('#' + name, false);
+        }
+    }
+
+    internal static void SetBookmark(FormattedText ft, string? name)
+    {
+        if (name != null)
+        {
+            ft.AddBookmark('#' + name, false);
         }
     }
 
@@ -339,6 +438,71 @@ internal static class SVisitorUtils
         else
         {
             throw new Exception("The STableRow should only be placed inside an STable.");
+        }
+    }
+
+    public static (TextFrame, Paragraph) GetMigradocObjectsForParagraph(SVisitor visitor)
+    {
+        var migradocParent = visitor.VisitedObjects.Peek();
+        if (migradocParent is Section section)
+        {
+            var tf = section.AddTextFrame();
+            return (tf, tf.AddParagraph());
+        }
+        else if (migradocParent is Cell cell)
+        {
+            var tf = cell.AddTextFrame();
+            return (tf, tf.AddParagraph());
+        }
+        else if (migradocParent is TextFrame frame)
+        {
+            var table = frame.AddTable();
+            table.AddColumn();
+            var tf = table.AddRow().Cells[0].AddTextFrame();
+            return (tf, tf.AddParagraph());
+        }
+        else
+        {
+            throw new Exception("An SParagraph can not be placed outside a SSection, SColumn, SRow, SContainer or STableCell.");
+        }
+    }
+
+    public static Hyperlink GetMigradocObjectForLinks(SVisitor visitor, SLink link)
+    {
+        var migradocParent = visitor.VisitedObjects.Peek();
+
+        Hyperlink l;
+
+        if (migradocParent is Paragraph paragraph)
+        {
+            bool isBookmarkLink = link.Link.StartsWith("#");
+
+            if (isBookmarkLink)
+            {
+                return paragraph.AddHyperlink(link.Link);
+            }
+            else
+            {
+                return paragraph.AddWebLink(link.Link);
+            }
+        }
+        else
+        {
+            throw new Exception("An SLink can only be inside of an SParagraph!");
+        }
+    }
+
+    public static FormattedText GetMigradocObjectForText(SVisitor visitor, SText text)
+    {
+        var migradocParent = visitor.VisitedObjects.Peek();
+
+        if (migradocParent is Paragraph paragraph)
+        {
+            return paragraph.AddFormattedText(text.Value);
+        }
+        else
+        {
+            throw new Exception("An SText can be inside only an SParagraph!");
         }
     }
 }

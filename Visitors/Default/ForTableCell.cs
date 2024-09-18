@@ -13,9 +13,9 @@ internal static class ForTableCell
         var (bookmarkTf, tf, c) = SVisitorUtils.GetMigradocObjectsForCell(visitor);
         style.Dimensions = parentsDimensions.Copy();
 
-        SVisitorUtils.SetBookmark(bookmarkTf, style);
+        SVisitorUtils.SetBookmark(bookmarkTf, cell.Name);
         SVisitorUtils.SetWidthAndHeight(tf, style, parentsDimensions);
-        SVisitorUtils.SetTableBorders(c.Borders, style, style.Dimensions);
+        SVisitorUtils.SetBorders(c.Borders, style, style.Dimensions);
         SVisitorUtils.SetShading(c.Shading, style);
 
         visitor.VisitedObjects.Push(tf);

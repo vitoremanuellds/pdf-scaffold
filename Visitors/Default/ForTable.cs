@@ -15,9 +15,14 @@ internal static class ForTable
         style.Dimensions = parentsDimensions.Copy();
 
         SVisitorUtils.SetWidthAndHeight(tf, style, parentsDimensions);
-        SVisitorUtils.SetTableBorders(t.Borders, style, style.Dimensions);
+        SVisitorUtils.SetBorders(t.Borders, style, style.Dimensions);
         SVisitorUtils.SetFormat(t.Format, style, style.Dimensions);
         SVisitorUtils.SetShading(t.Shading, style);
+
+        if (table.Rows.Count < 1)
+        {
+            throw new Exception("There has to be at least one STableRow inside an STable.");
+        }
 
         var (columns, rows) = TableDimensions(table.Rows);
         if (table.ColumnSizes != null && table.ColumnSizes.Count != columns)
@@ -27,6 +32,7 @@ internal static class ForTable
 
         GenerateColumns(table, t, style.Dimensions, columns);
         t.GenerateRows(rows);
+        SVisitorUtils.SetBookmark(t.Rows[0].Cells[0], table.Name);
 
         visitor.VisitedObjects.Push(t);
 

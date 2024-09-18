@@ -20,7 +20,7 @@ internal static class ForTableRow
 
         SVisitorUtils.SetShading(r.Shading, style);
         SVisitorUtils.SetWidthAndHeight(r, style, parentsDimensions);
-        SVisitorUtils.SetTableBorders(r.Borders, style, style.Dimensions);
+        SVisitorUtils.SetBorders(r.Borders, style, style.Dimensions);
 
         int columnIndex = 0;
         var cells = row.Positions!;
@@ -34,7 +34,7 @@ internal static class ForTableRow
             visitor.VisitedObjects.Push(c);
             if (row.RowIndex == 0)
             {
-                SVisitorUtils.SetBookmark(c, row.Style!);
+                SVisitorUtils.SetBookmark(c, row.Name);
             }
             cell.FathersStyle = style;
             cell.Accept(visitor);

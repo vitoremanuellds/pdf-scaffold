@@ -15,7 +15,7 @@ internal static class ForColumn
         style.Dimensions = parentsDimensions.Copy();
 
         SVisitorUtils.SetWidthAndHeight(tf, style, parentsDimensions);
-        SVisitorUtils.SetTableBorders(table.Borders, style, style.Dimensions);
+        SVisitorUtils.SetBorders(table.Borders, style, style.Dimensions);
         SVisitorUtils.SetFormat(table.Format, style, style.Dimensions);
         SVisitorUtils.SetShading(table.Shading, style);
 
@@ -25,7 +25,7 @@ internal static class ForColumn
             var cell = table.AddRow().Cells[0];
             if (i == 0)
             {
-                SVisitorUtils.SetBookmark(cell, style);
+                SVisitorUtils.SetBookmark(cell, column.Name);
             }
 
             visitor.VisitedObjects.Push(cell);

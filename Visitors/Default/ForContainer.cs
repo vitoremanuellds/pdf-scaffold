@@ -16,9 +16,9 @@ internal static class ForContainer
         var (bookmarkTf, textFrame) = SVisitorUtils.GetMigradocObjectsForContainer(visitor);
         style.Dimensions = parentsDimensions.Copy();
 
-        SVisitorUtils.SetBookmark(bookmarkTf, style);
+        SVisitorUtils.SetBookmark(bookmarkTf, container.Name);
         SVisitorUtils.SetWidthAndHeight(textFrame, style, parentsDimensions);
-        SVisitorUtils.SetContainerAndImageBorder(textFrame.LineFormat, style);
+        SVisitorUtils.SetBorder(textFrame.LineFormat, style);
         SVisitorUtils.SetShading(textFrame.FillFormat, style);
         SetPadding(textFrame, style);
 

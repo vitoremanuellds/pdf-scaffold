@@ -8,10 +8,11 @@ public class STableCell(
     SSectionElement content,
     SStyle? style = null,
     string? useStyle = null,
+    string? name = null,
     // string? name = null,
     int columnSpan = 1,
     int rowSpan = 1
-) : STableElement(style, useStyle) {
+) : STableElement(style, useStyle, name) {
 
     internal Guid Id { get; } = Guid.NewGuid();
     public int ColumnSpan { get; } = columnSpan;

@@ -18,9 +18,9 @@ internal static class ForImage
         var (tf, mdImage) = SVisitorUtils.GetMigradocObjectsForImage(visitor, image);
         style.Dimensions = parentsDimensions.Copy();
 
-        SVisitorUtils.SetBookmark(tf, style);
+        SVisitorUtils.SetBookmark(tf, image.Name);
         SVisitorUtils.SetWidthAndHeight(mdImage, style, parentsDimensions);
-        SVisitorUtils.SetContainerAndImageBorder(mdImage.LineFormat, style);
+        SVisitorUtils.SetBorder(mdImage.LineFormat, style);
         image.CropImage(mdImage, style);
         SetPosition(mdImage, style);
 
