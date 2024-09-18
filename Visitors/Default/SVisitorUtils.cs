@@ -414,7 +414,7 @@ internal static class SVisitorUtils
         }
     }
 
-    public static (TextFrame, TextFrame, Cell) GetMigradocObjectsForCell(SVisitor visitor)
+    internal static (TextFrame, TextFrame, Cell) GetMigradocObjectsForCell(SVisitor visitor)
     {
         var migradocParent = visitor.VisitedObjects.Peek();
 
@@ -428,7 +428,7 @@ internal static class SVisitorUtils
         }
     }
 
-    public static Row GetMigradocObjectForRow(SVisitor visitor)
+    internal static Row GetMigradocObjectForRow(SVisitor visitor)
     {
         var migradocParent = visitor.VisitedObjects.Peek();
         if (migradocParent is Table table)
@@ -441,7 +441,7 @@ internal static class SVisitorUtils
         }
     }
 
-    public static (TextFrame, Paragraph) GetMigradocObjectsForParagraph(SVisitor visitor)
+    internal static (TextFrame, Paragraph) GetMigradocObjectsForParagraph(SVisitor visitor)
     {
         var migradocParent = visitor.VisitedObjects.Peek();
         if (migradocParent is Section section)
@@ -467,7 +467,7 @@ internal static class SVisitorUtils
         }
     }
 
-    public static Hyperlink GetMigradocObjectForLinks(SVisitor visitor, SLink link)
+    internal static Hyperlink GetMigradocObjectForLinks(SVisitor visitor, SLink link)
     {
         var migradocParent = visitor.VisitedObjects.Peek();
 
@@ -492,7 +492,7 @@ internal static class SVisitorUtils
         }
     }
 
-    public static FormattedText GetMigradocObjectForText(SVisitor visitor, SText text)
+    internal static FormattedText GetMigradocObjectForText(SVisitor visitor, SText text)
     {
         var migradocParent = visitor.VisitedObjects.Peek();
 

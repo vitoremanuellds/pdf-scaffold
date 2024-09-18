@@ -1,10 +1,38 @@
 namespace PDFScaffold.Metrics;
 
+/// <summary>
+/// Defines the size of the components.
+/// </summary>
 public class SMeasure {
 
+    /// <summary>
+    /// The value of the SMeasure in Points.
+    /// </summary>
     public double Value { get; }
+    /// <summary>
+    /// If the value used to create the SMeasure was a percentage, this will be true.
+    /// </summary>
     public bool IsPercentage { get; } = false;
 
+
+    /// <summary>
+    /// Creates an SMeasure with the given value. The precedence order will be:
+    /// <ul>
+    /// <li>Points</li>
+    /// <li>Inches</li>
+    /// <li>Picas</li>
+    /// <li>Centimeters</li>
+    /// <li>Millimeters</li>
+    /// <li>Percentage</li>
+    /// </ul>
+    /// </summary>
+    /// <param name="points">The size in Points. By default, an inch has 72 points.</param>
+    /// <param name="inches">The size in Inches</param>
+    /// <param name="picas">The size in Picas</param>
+    /// <param name="centimeters">The size in Centimeters</param>
+    /// <param name="millimeters">The size in Millimeters</param>
+    /// <param name="percentage">The size in percentage relative to the Parent, only for Widths and Heights, or to the component itself.</param>
+    /// <exception cref="Exception"></exception>
     public SMeasure(
         double? points = null, 
         double? inches = null,
