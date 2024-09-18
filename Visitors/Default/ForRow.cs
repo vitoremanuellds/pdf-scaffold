@@ -22,9 +22,7 @@ internal static class ForRow
         table.GenerateColumns(row.Elements.Count);
         var tRow = table.AddRow();
 
-        var customColumnsWidths = 0.0;
-        var customColumns = 0;
-
+        row.SetColumnsWidth(table, style);
         for (int i = 0; i < row.Elements.Count; i++)
         {
             var cell = tRow.Cells[i];
@@ -36,34 +34,45 @@ internal static class ForRow
             visitor.VisitedObjects.Push(cell);
 
             var el = row.Elements.ElementAt(i);
+            style.Dimensions.X = table.Columns[i].Width.Point;
             el.FathersStyle = style;
             el.Accept(visitor);
-
-            if (el.Style?.Width != null)
-            {
-                table.Columns[i].Width = el.Dimensions!.X;
-                customColumnsWidths += el.Dimensions!.X;
-                customColumns += 1;
-            }
 
             visitor.VisitedObjects.Pop();
         }
 
-        row.SetColumnsWidth(table, style, customColumnsWidths, customColumns);
         row.Dimensions = style.Dimensions;
     }
 
-    internal static void SetColumnsWidth(this SRow row, Table table, SStyle style, double customColumnsWidths, double customColumns)
+    internal static void SetColumnsWidth(this SRow row, Table table, SStyle style)
     {
+        IList<int> widths = [];
+        var availableSpace = style.Dimensions!.X;
         for (int i = 0; i < row.Elements.Count; i++)
         {
             var el = row.Elements.ElementAt(i);
-            if (el.Style?.Width == null)
+            var elDimensions = style.Dimensions!.Copy();
+            var elWidth = el.Style?.Width;
+
+            if (elWidth != null)
             {
-                var remainingSpace = style.Dimensions!.X - customColumnsWidths;
-                var remainingColumns = row.Elements.Count - customColumns;
-                table.Columns[i].Width = remainingSpace / remainingColumns;
+                var realWidth = SMetricsUtil.GetUnitValue(elWidth!, elDimensions.X);
+                table.Columns[i].Width = realWidth;
+                availableSpace -= realWidth.Point;
+            } else {
+                widths.Add(i);
             }
         }
+        
+        var count = widths.Count;
+        if (count > 0) {
+            if (availableSpace <= 0) availableSpace = 1;
+
+            var width = availableSpace / count;
+            foreach (var i in widths)
+            {
+                table.Columns[i].Width = width;
+            }
+        }        
     }
 }

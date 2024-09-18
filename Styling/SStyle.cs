@@ -7,6 +7,7 @@ namespace PDFScaffold.Styling;
 /// <summary>
 /// Represents the style of a component inside the SDocument. The style values set in a parent is passed down to its children, with the exception of Width, Height, TopPosition, LeftPosition, Borders, PositionType, Padding, Margin and Centered.
 /// </summary>
+/// <param name="name">The name of the style used to be referenced by the components in the UseStyle field when the SStyle is inside the Styles field at the SDocument.</param>
 /// <param name="fontColor">The color of the font used in the component. It is applied to SParagraph, SText and SLink.</param>
 /// <param name="bold">If true, the font will be bold inside the component. It is applied to SParagraph, SText and Slink.</param>
 /// <param name="italic">If true, the font will be italic inside the component. It is applied to SParagraph, SText and Slink.</param>
@@ -14,9 +15,20 @@ namespace PDFScaffold.Styling;
 /// <param name="fontSize">The size of the font inside the component. It is applied to SParagraph, SText and Slink.</param>
 /// <param name="superscript">If true, the text inside the component will be superscript. Only works if <c>subscript</c> is false. It is applied to SParagraph, SText and Slink.</param>
 /// <param name="subscript">If true, the text inside the component will be subscript. Only works if <c>superscript</c> is false. It is applied to SParagraph, SText and Slink.</param>
+/// <param name="lineSpacing">The size of the space between the lines of a paragraph. Only works on SParagraph.</param>
+/// <param name="spaceBefore">The size of the space before the paragraph. Only works on SParagraph.</param>
+/// <param name="spaceAfter">The size of the space after the paragraph. Only works on SParagraph.</param>
 /// <param name="shading">The color of the background inside the component. It is applied to SContainer, SColumn, SRow, STable, STableRow, STableCell and SParagraph.</param>
-/// <param name="width">The width of the whole component. If not set, the component will use all the size remaining or the size that it needs. It is applied to all components, except SSection, STableRow and STableCell. This value is only applied on the current component.</param>
-/// <param name="height">The height of the whole component. If not set, the component will use the size it needs. It is applied to all components, except SSection, and STableCell. This value is only applied on the current component.</param>
+/// <param name="width">
+///     <para>The width of the whole component. If not set, the component will use all the size remaining or the size that it needs.</para>
+///     <para>It is applied to all components, except SSection, STableRow and STableCell.</para>
+///     <para>On SParagraph and SHeading, the Width is only applied if the Height is set as well. On SImage, if the Width is set and the Height is not, then the aspect ratio of the image will be locked. This value is only applied on the current component.</para>
+/// </param>
+/// <param name="height">
+///     <para>The height of the whole component. If not set, the component will use the size it needs.</para> 
+///     <para>It is applied to all components, except SSection, and STableCell. </para>
+///     <para>On SParagraph and SHeading, the Height is only applied if the Width is set as well. On SImage, if the Width is set and the Height is not, then the aspect ratio of the image will be locked. This value is only applied on the current component.</para>
+/// </param>
 /// <param name="topPosition">The position of the component relative to the top of the document. It is applied to SImage.</param>
 /// <param name="leftPosition">The position of the component relative to the left of the document. It is applied to SImage.</param>
 /// <param name="positionType">The type of the position of the component. It is applied to SImage.</param>
@@ -35,6 +47,9 @@ public class SStyle(
     SMeasure? fontSize = null,
     bool? superscript = null,
     bool? subscript = null,
+    SMeasure? lineSpacing = null,
+    SMeasure? spaceBefore = null,
+    SMeasure? spaceAfter = null,
     Color? shading = null,
     SMeasure? width = null,
     SMeasure? height = null,
@@ -83,6 +98,19 @@ public class SStyle(
     /// If true, the text inside the component will be subscript. Only works if <paramref name="superscript"> is false. It is applied to SParagraph, SText and Slink.
     /// </summary>
     public bool? Subscript { get; } = subscript;
+    /// <summary>
+    /// The size of the space between the lines of a paragraph. Only works on SParagraphs.
+    /// </summary>
+    public SMeasure? LineSpacing { get; } = lineSpacing;
+    /// <summary>
+    /// The size of the space before the paragraph. Only works on SParagraphs.
+    /// </summary>
+    public SMeasure? SpaceBefore { get; } = spaceBefore;
+    /// <summary>
+    /// The size of the space after the paragraph. Only works on SParagraphs.
+    /// </summary>
+    public SMeasure? SpaceAfter { get; } = spaceAfter;
+
     /// <summary>
     /// The color of the background inside the component. It is applied to SContainer, SColumn, SRow, STable, STableRow, STableCell and SParagraph.
     /// </summary>
@@ -149,6 +177,9 @@ public class SStyle(
             FontSize ?? style?.FontSize,
             Superscript ?? style?.Superscript,
             Subscript ?? style?.Subscript,
+            LineSpacing ?? style?.LineSpacing,
+            SpaceBefore ?? style?.SpaceBefore,
+            SpaceAfter ?? style?.SpaceAfter,
             Shading ?? style?.Shading,
             Width,
             Height,

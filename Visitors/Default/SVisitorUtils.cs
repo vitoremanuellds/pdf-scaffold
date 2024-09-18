@@ -25,16 +25,16 @@ internal static class SVisitorUtils
         );
     }
 
-    internal static void SetWidthAndHeight(TextFrame tf, SStyle style, SDimensions dimensions)
+    internal static void SetWidthAndHeight(TextFrame? tf, SStyle style, SDimensions dimensions)
     {
-        if (style.Width != null)
+        if (style.Width != null && tf != null)
         {
             var width = SMetricsUtil.GetUnitValue(style.Width, dimensions.X);
             tf.Width = width;
             style.Dimensions!.X = width.Point;
         }
 
-        if (style.Height != null)
+        if (style.Height != null && tf != null)
         {
             var height = SMetricsUtil.GetUnitValue(style.Height, dimensions.Y);
             tf.Height = height;
@@ -48,6 +48,11 @@ internal static class SVisitorUtils
         {
             var width = SMetricsUtil.GetUnitValue(style.Width, dimensions.X);
             image.Width = width;
+            if (style.Height == null)
+            {
+                image.Height = width;
+                style.Dimensions!.Y = image.Height.Point;
+            }
             style.Dimensions!.X = width.Point;
         }
 
@@ -55,6 +60,11 @@ internal static class SVisitorUtils
         {
             var height = SMetricsUtil.GetUnitValue(style.Height, dimensions.Y);
             image.Height = height;
+            if (style.Width == null)
+            {
+                image.Width = height;
+                style.Dimensions!.X = image.Width.Point;
+            }
             style.Dimensions!.Y = height.Point;
         }
     }
@@ -83,7 +93,7 @@ internal static class SVisitorUtils
     {
         formattedText.Bold = style.Bold ?? false;
         formattedText.Italic = style.Italic ?? false;
-        formattedText.Color = style.FontColor ?? Colors.BlueViolet;
+        formattedText.Color = style.FontColor ?? (isLink ? Colors.BlueViolet : Colors.Black);
 
         switch (style.Underline)
         {
@@ -121,7 +131,7 @@ internal static class SVisitorUtils
     internal static void SetFormat(ParagraphFormat format, SStyle style, SDimensions dimensions, bool isHeading = false, int level = 1)
     {
         format.Font.Color = style.FontColor ?? Colors.Black;
-        format.Font.Bold = style.Bold ?? true;
+        format.Font.Bold = style.Bold ?? isHeading;
         format.Font.Italic = style.Italic ?? false;
         format.Font.Underline = SUnderlineUtils.GetUnderline(style.Underline ?? SUnderline.None);
         if (style.FontSize != null)
@@ -130,6 +140,10 @@ internal static class SVisitorUtils
         } else if (isHeading)
         {
             format.Font.Size = SHeading.GetFontSize(level);
+        }
+
+        if (isHeading)
+        {
             format.OutlineLevel = level switch
             {
                 1 => OutlineLevel.Level1,
@@ -141,6 +155,7 @@ internal static class SVisitorUtils
                 _ => OutlineLevel.Level1,
             };
         }
+
         format.Font.Subscript = (style.Subscript ?? false) && !(style.Superscript ?? false);
         format.Font.Superscript = (style.Superscript ?? false) && !(style.Subscript ?? false);
         switch (style.HorizontalAlignment)
@@ -157,6 +172,16 @@ internal static class SVisitorUtils
             case SAlignment.Justified:
                 format.Alignment = ParagraphAlignment.Justify;
                 break;
+        }
+        if (style.LineSpacing != null)
+        {
+            format.LineSpacingRule = LineSpacingRule.Single;
+            format.LineSpacing = SMetricsUtil.GetUnitValue(style.LineSpacing, dimensions.Y);
+        }    
+        format.SpaceBefore = SMetricsUtil.GetUnitValue(style.SpaceBefore ?? new(10), dimensions.Y);
+        if (style.SpaceAfter != null)
+        {
+            format.SpaceAfter = SMetricsUtil.GetUnitValue(style.SpaceAfter, dimensions.Y);
         }
     }
 
@@ -440,21 +465,33 @@ internal static class SVisitorUtils
         }
     }
 
-    internal static (TextFrame, Paragraph) GetMigradocObjectsForParagraph(SVisitor visitor)
+    internal static (TextFrame?, Paragraph) GetMigradocObjectsForParagraph(SVisitor visitor, bool needTextFrame = false)
     {
         var migradocParent = visitor.VisitedObjects.Peek();
         if (migradocParent is Section section)
         {
+            if (!needTextFrame)
+            {
+                return (null, section.AddParagraph());
+            }
             var tf = section.AddTextFrame();
             return (tf, tf.AddParagraph());
         }
         else if (migradocParent is Cell cell)
         {
+            if (!needTextFrame)
+            {
+                return (null, cell.AddParagraph());
+            }
             var tf = cell.AddTextFrame();
             return (tf, tf.AddParagraph());
         }
         else if (migradocParent is TextFrame frame)
         {
+            if (!needTextFrame)
+            {
+                return (null, frame.AddParagraph());
+            }
             var table = frame.AddTable();
             table.AddColumn();
             var tf = table.AddRow().Cells[0].AddTextFrame();

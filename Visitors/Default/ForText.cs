@@ -15,6 +15,11 @@ public static class ForText {
         FormattedText ft = SVisitorUtils.GetMigradocObjectForText(visitor, text);
         style.Dimensions = parentsDimensions;
 
+        if (text.BreakLine)
+        {
+            ft.AddText("\n");
+        }
+
         SVisitorUtils.SetBookmark(ft, text.Name);
         SVisitorUtils.SetFormat(ft, style, style.Dimensions!);
     }

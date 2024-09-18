@@ -6,9 +6,10 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <PackageId>PDFScaffold.09.17.24.001.Test</PackageId>
-    <Version>0.0.1</Version>
+    <Version>0.0.2</Version>
     <Authors>Vitor dos Santos</Authors>
     <Company>UFCG</Company>
+    <Title>PDFScaffold</Title>
   </PropertyGroup>
 
   <ItemGroup>

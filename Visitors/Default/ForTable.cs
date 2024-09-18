@@ -80,6 +80,8 @@ internal static class ForTable
             if (table.ColumnSizes != null)
             {
                 column.Width = SMetricsUtil.GetUnitValue(table.ColumnSizes!.ElementAt(i), dimensions.X);
+            } else {
+                column.Width = dimensions.X / columns;
             }
         }
     }

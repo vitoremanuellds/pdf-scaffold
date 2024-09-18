@@ -23,7 +23,7 @@ internal static class ForSection
         sec.PageSetup.PageHeight = Unit.FromPoint(pageFormat.Height.Value);
 
         SMargin margin = section.Margin
-            ?? SMargin.All(new SMeasure(inches: 1));
+            ?? new SMargin(new SMeasure(inches: 1));
 
         var width = pageFormat!.Width.Value;
         var height = pageFormat!.Height.Value;
