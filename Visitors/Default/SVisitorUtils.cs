@@ -5,7 +5,6 @@ using PDFScaffold.Images;
 using PDFScaffold.Metrics;
 using PDFScaffold.Styling;
 using PDFScaffold.Texts;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace PDFScaffold.Visitors.Default;
 

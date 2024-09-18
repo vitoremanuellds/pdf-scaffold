@@ -1,10 +1,10 @@
-using PDFScaffold.Metrics;
+//using PDFScaffold.Metrics;
 
-namespace PDFScaffold.Styling;
+//namespace PDFScaffold.Styling;
 
-public class STabStop(SMeasure? position = null, SAlignment? alignment = null) {
+//public class STabStop(SMeasure? position = null, SAlignment? alignment = null) {
 
-    public SMeasure? Position { get; } = position;
-    public SAlignment? Alignment { get; } = alignment;
+//    public SMeasure? Position { get; } = position;
+//    public SAlignment? Alignment { get; } = alignment;
 
-}
+//}

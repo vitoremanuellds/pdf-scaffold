@@ -3,7 +3,8 @@ using PDFScaffold.Metrics;
 namespace PDFScaffold.Scaffold;
 
 /// <summary>
-/// Defines the Format of the page inside the section.
+/// Defines the Format of the page inside the section. 
+/// There are predefined values for it you can use: A0..A6, B5, Letter, Ledger and Legal. For example, you can use <c>SPageFormat.A4()</c> 
 /// </summary>
 public class SPageFormat {
     /// <summary>

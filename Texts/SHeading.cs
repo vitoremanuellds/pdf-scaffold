@@ -1,10 +1,17 @@
 using MigraDoc.DocumentObjectModel;
 using PDFScaffold.Styling;
 using PDFScaffold.Visitors;
-using System.Net.Mime;
 
 namespace PDFScaffold.Texts;
 
+/// <summary>
+/// Represents a heading inside the SDocument.
+/// </summary>
+/// <param name="content">The text elements inside the SHeading.</param>
+/// <param name="level">The level of the SHeading. It goes from 1 to 6.</param>
+/// <param name="style">The style used in the SHeading.</param>
+/// <param name="useStyle">The name of the style referenced to be used in the SHeading.</param>
+/// <param name="name">The name of the SHeading. It is used to reference the SHeading using an SLink.</param>
 public class SHeading(
     ICollection<STextElement> content,
     int level = 1,
@@ -13,6 +20,9 @@ public class SHeading(
     string? name = null
 ) : SParagraph(content, style, useStyle, name) {
 
+    /// <summary>
+    /// The level of the SHeading.
+    /// </summary>
     public int Level { get; } = level;
 
     public override void Accept(IPdfScaffoldVisitor visitor)
@@ -20,7 +30,7 @@ public class SHeading(
         visitor.ForHeading(this);
     }
 
-    public static Unit GetFontSize(int level) {
+    internal static Unit GetFontSize(int level) {
         return level switch
         {
             1 => Unit.FromPoint(25.5),

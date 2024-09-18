@@ -16,15 +16,8 @@ public class SMeasure {
 
 
     /// <summary>
-    /// Creates an SMeasure with the given value. The precedence order will be:
-    /// <ul>
-    /// <li>Points</li>
-    /// <li>Inches</li>
-    /// <li>Picas</li>
-    /// <li>Centimeters</li>
-    /// <li>Millimeters</li>
-    /// <li>Percentage</li>
-    /// </ul>
+    /// Creates an SMeasure with the given value. The precedence order will be: 
+    /// Poinst, Inches, Picas, Centimeters, Millimeters and Percentage.
     /// </summary>
     /// <param name="points">The size in Points. By default, an inch has 72 points.</param>
     /// <param name="inches">The size in Inches</param>
@@ -32,7 +25,7 @@ public class SMeasure {
     /// <param name="centimeters">The size in Centimeters</param>
     /// <param name="millimeters">The size in Millimeters</param>
     /// <param name="percentage">The size in percentage relative to the Parent, only for Widths and Heights, or to the component itself.</param>
-    /// <exception cref="Exception"></exception>
+    /// <exception cref="Exception">If no value is given, an exception is thrown.</exception>
     public SMeasure(
         double? points = null, 
         double? inches = null,
