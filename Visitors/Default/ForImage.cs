@@ -8,81 +8,61 @@ using PDFScaffold.Styling;
 
 namespace PDFScaffold.Visitors.Default;
 
-internal static class ForImage {
+internal static class ForImage
+{
 
-    public static void DoForImage(this SVisitor visitor, SImage image) {
-        SStyle style = visitor.GetStyle(image.Style, image.UseStyle) ?? new SStyle();
-        style = style.Merge(image.FathersStyle);
+    public static void DoForImage(this SVisitor visitor, SImage image)
+    {
+        SStyle style = visitor.GetOrCreateStyle(image.Style, image.FathersStyle!, image.UseStyle);
+        SDimensions parentsDimensions = image.FathersStyle!.Dimensions!;
+        var (tf, mdImage) = SVisitorUtils.GetMigradocObjectsForImage(visitor, image);
+        style.Dimensions = parentsDimensions.Copy();
 
-        TextFrame tf;
-        Image mdImage;
+        SVisitorUtils.SetBookmark(tf, style);
+        SVisitorUtils.SetWidthAndHeight(mdImage, style, parentsDimensions);
+        SVisitorUtils.SetContainerAndImageBorder(mdImage.LineFormat, style);
+        image.CropImage(mdImage, style);
+        SetPosition(mdImage, style);
 
-        object father = visitor.VisitedObjects.Peek();
+        mdImage.Resolution = style.Resolution ?? 72;
 
-        if (father != null && father is Section section) {
-            tf = section.AddTextFrame();
-            mdImage = section.AddImage(image.Path);
-        } else if (father is Cell cell) {
-            tf = cell.AddTextFrame();
-            mdImage = cell.AddImage(image.Path);
-        } else if (father is TextFrame textFrame) {
-            var table = textFrame.AddTable();
-            table.AddColumn();
-            tf = table.AddRow().Cells[0].AddTextFrame();
-            mdImage = textFrame.AddImage(image.Path);
-        } else {
-            throw new Exception("An SImage can not be used outside an SSection, SColumn, SRow, SContainer and STableCell");
-        }
+        // SMargin? margin = style.Margin;
 
-        tf.Width = Unit.FromPoint(1);
-        tf.Height = Unit.FromPoint(1);
+        // if (margin != null)
+        // {
+        //     mdImage.WrapFormat.DistanceBottom = SMetricsUtil.GetUnitValue(margin.Bottom ?? new SMeasure(0), style.Dimensions!.Y);
+        //     mdImage.WrapFormat.DistanceTop = SMetricsUtil.GetUnitValue(margin.Top ?? new SMeasure(0), style.Dimensions!.Y);
+        //     mdImage.WrapFormat.DistanceLeft = SMetricsUtil.GetUnitValue(margin.Left ?? new SMeasure(0), style.Dimensions!.X);
+        //     mdImage.WrapFormat.DistanceRight = SMetricsUtil.GetUnitValue(margin.Right ?? new SMeasure(0), style.Dimensions!.X);
+        // }
 
-        if (image.Name != null) {
-            SetBookmark(style, tf);
-        }
+        image.Dimensions = style.Dimensions;
+    }
 
-        SetWidthAndHeight(mdImage, style, image.FathersStyle!.Dimensions!);
-
-        SBorder? border = style.Borders?.Left;
-
-        if (border != null) {
-            mdImage.LineFormat.Color = border.Color ?? Colors.Black;
-            SBorderType borderType = 
-                border.BorderType ?? SBorderType.Solid;
-
-            mdImage.LineFormat.DashStyle = borderType switch {
-                SBorderType.Dash => DashStyle.Dash,
-                SBorderType.DashDot => DashStyle.DashDot,
-                SBorderType.DashDotDot => DashStyle.DashDotDot,
-                SBorderType.Solid => DashStyle.Solid,
-                SBorderType.SquareDot => DashStyle.SquareDot,
-                _ => DashStyle.Solid
-            };
-            mdImage.LineFormat.Visible = border.Visible ?? true;
-            var borderWidth = SMetricsUtil.GetUnitValue(border.Width ?? new SMeasure(1), style.Dimensions!.X);
-            mdImage.LineFormat.Width = borderWidth;
-            style.Dimensions!.X -= 2 * borderWidth.Point;
-            style.Dimensions!.Y -= 2 * borderWidth.Point;
-        }
-
+    internal static void CropImage(this SImage image, Image mdImage, SStyle style)
+    {
         var crop = image.CropImage;
-        if (crop != null) {
+        if (crop != null)
+        {
             mdImage.PictureFormat.CropTop = SMetricsUtil.GetUnitValue(crop.FromTop ?? new SMeasure(0), style.Dimensions!.Y);
             mdImage.PictureFormat.CropBottom = SMetricsUtil.GetUnitValue(crop.FromBottom ?? new SMeasure(0), style.Dimensions!.Y);
-            
+
             mdImage.PictureFormat.CropLeft = SMetricsUtil.GetUnitValue(crop.FromLeft ?? new SMeasure(0), style.Dimensions!.X);
             mdImage.PictureFormat.CropRight = SMetricsUtil.GetUnitValue(crop.FromRight ?? new SMeasure(0), style.Dimensions!.X);
         }
+    }
 
-        mdImage.WrapFormat.Style = 
+    internal static void SetPosition(Image mdImage, SStyle style)
+    {
+        mdImage.WrapFormat.Style =
             style.PositionType == SPositionType.Fixed ?
             WrapStyle.None :
             WrapStyle.TopBottom;
-        mdImage.RelativeHorizontal = 
+        mdImage.RelativeHorizontal =
             style.PositionType == SPositionType.Fixed ?
             RelativeHorizontal.Page :
             RelativeHorizontal.Column;
-        mdImage.RelativeVertical = 
+        mdImage.RelativeVertical =
             style.PositionType == SPositionType.Fixed ?
             RelativeVertical.Page :
             RelativeVertical.Paragraph;
@@ -96,38 +76,5 @@ internal static class ForImage {
         {
             mdImage.Top = SMetricsUtil.GetUnitValue(style.TopPosition, style.Dimensions!.Y);
         }
-
-        mdImage.Resolution = style.Resolution ?? 72;
-        
-        SMargin? margin = style.Margin;
-
-        if (margin != null) {
-            mdImage.WrapFormat.DistanceBottom = SMetricsUtil.GetUnitValue(margin.Bottom ?? new SMeasure(0), style.Dimensions!.Y);
-            mdImage.WrapFormat.DistanceTop = SMetricsUtil.GetUnitValue(margin.Top ?? new SMeasure(0), style.Dimensions!.Y);
-            mdImage.WrapFormat.DistanceLeft = SMetricsUtil.GetUnitValue(margin.Left ?? new SMeasure(0), style.Dimensions!.X);
-            mdImage.WrapFormat.DistanceRight = SMetricsUtil.GetUnitValue(margin.Right ?? new SMeasure(0), style.Dimensions!.X);
-        }
-
-        image.Dimensions = style.Dimensions;
-    }
-
-    internal static void SetWidthAndHeight(Image image, SStyle style, SDimensions dimensions) {
-        if (style.Width != null) {
-            image.Width = SMetricsUtil.GetUnitValue(style.Width, dimensions.X);
-        } else {
-            image.Width = Unit.FromPoint(dimensions.X);
-        }
-
-        if (style.Height != null) {
-            image.Height = SMetricsUtil.GetUnitValue(style.Height, dimensions.Y);
-        } else {
-            image.Height = Unit.FromPoint(dimensions.Y);
-        }
-
-        style.Dimensions = new SDimensions(image.Height.Point, image.Width.Point);
-    }
-
-    internal static void SetBookmark(SStyle style, TextFrame tf) {
-        tf.AddParagraph().AddBookmark("#" + style.Name!);
     }
 }

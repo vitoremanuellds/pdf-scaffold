@@ -1,109 +1,72 @@
 using MigraDoc.DocumentObjectModel;
 using MigraDoc.DocumentObjectModel.Shapes;
-using MigraDoc.DocumentObjectModel.Tables;
 using PDFScaffold.Layout;
 using PDFScaffold.Metrics;
-using PDFScaffold.Scaffold;
 using PDFScaffold.Styling;
 
 namespace PDFScaffold.Visitors.Default;
 
-public static class ForContainer {
+public static class ForContainer
+{
 
-    public static void DoForContainer(this SVisitor visitor, SContainer container) {
-        SStyle style = visitor.GetStyle(container.Style, container.UseStyle) ?? new SStyle();
-        style = style.Merge(container.FathersStyle);
+    public static void DoForContainer(this SVisitor visitor, SContainer container)
+    {
+        SStyle style = visitor.GetOrCreateStyle(container.Style, container.FathersStyle!, container.UseStyle);
+        SDimensions parentsDimensions = container.FathersStyle!.Dimensions!;
+        var (bookmarkTf, textFrame) = SVisitorUtils.GetMigradocObjectsForContainer(visitor);
+        style.Dimensions = parentsDimensions.Copy();
 
-        TextFrame textFrame;
-        var father = visitor.VisitedObjects.Peek();
-
-        if (father != null && father is Section section) {
-            if (style.Name != null) { SetBookmark(style, section.AddTextFrame()); }
-            textFrame = section.AddTextFrame();
-        } else if (father is Cell cell) {
-            if (style.Name != null) { SetBookmark(style, cell.AddTextFrame()); }
-            textFrame = cell.AddTextFrame();
-        } else {
-            throw new Exception("A Container can not be used inside other elements than an SSection, SColumn or SRow");
-        }
-
-        SDimensions availableSpace = container.FathersStyle!.Dimensions!;
-
-        SBorder? border = style.Borders?.Left;
-
-        if (border != null) {
-            textFrame.LineFormat.Color = border?.Color ?? Colors.Black;
-            SBorderType borderType = 
-                border?.BorderType ?? SBorderType.Solid;
-
-            textFrame.LineFormat.DashStyle = borderType switch {
-                SBorderType.Dash => DashStyle.Dash,
-                SBorderType.DashDot => DashStyle.DashDot,
-                SBorderType.DashDotDot => DashStyle.DashDotDot,
-                SBorderType.Solid => DashStyle.Solid,
-                SBorderType.SquareDot => DashStyle.SquareDot,
-                _ => DashStyle.Solid
-            };
-            
-            textFrame.LineFormat.Visible = border?.Visible ?? true;
-            textFrame.LineFormat.Width = SMetricsUtil.GetUnitValue(border?.Width ?? new SMeasure(1), availableSpace.X);
-            availableSpace.X -= 2 * textFrame.LineFormat.Width.Point;
-            availableSpace.Y -= 2 * textFrame.LineFormat.Width.Point;
-        }
-
-        if (style.Width != null) {
-            textFrame.Width = SMetricsUtil.GetUnitValue(style.Width, availableSpace.X);
-        } else {
-            textFrame.Width = availableSpace.X;
-        }
-
-        if (style.Height != null) {
-            textFrame.Height = SMetricsUtil.GetUnitValue(style.Height, availableSpace.Y);
-        } else {
-            textFrame.Height = availableSpace.Y;
-        }
-
-        style.Dimensions = new SDimensions(textFrame.Height.Point, textFrame.Width.Point);
-
-        if (style.Shading != null) {
-            textFrame.FillFormat.Color = style.Shading ?? Colors.White;
-        }
-
-        SMargin? margin = style.Margin;
-
-        if (margin != null) {
-            textFrame.MarginLeft = SMetricsUtil.GetUnitValue(margin.Left ?? new SMeasure(0), availableSpace.X);
-            textFrame.MarginRight = SMetricsUtil.GetUnitValue(margin.Right ?? new SMeasure(0), availableSpace.X);
-            textFrame.MarginTop = SMetricsUtil.GetUnitValue(margin.Top ?? new SMeasure(0), availableSpace.Y);
-            textFrame.MarginBottom = SMetricsUtil.GetUnitValue(margin.Bottom ?? new SMeasure(0), availableSpace.Y);
-        }
+        SVisitorUtils.SetBookmark(bookmarkTf, style);
+        SVisitorUtils.SetWidthAndHeight(textFrame, style, parentsDimensions);
+        SVisitorUtils.SetContainerAndImageBorder(textFrame.LineFormat, style);
+        SVisitorUtils.SetShading(textFrame.FillFormat, style);
+        SetPadding(textFrame, style);
 
         visitor.VisitedObjects.Push(textFrame);
 
         container.Content.FathersStyle = style;
-        // container.Content.GetType().GetMethod("Accept")!.Invoke(container.Content, [visitor]);
         container.Content.Accept(visitor);
 
-        if (style.Centered ?? false) {
-            double sonX = container.Content.Dimensions!.X;
-            double sonY = container.Content.Dimensions!.Y;
-            double horizontalMargins = (textFrame.Width.Point - sonX) / 2;
-            double verticalMargins = (textFrame.Height.Point - sonY) / 2;
-            textFrame.MarginLeft = Unit.FromPoint(horizontalMargins);
-            textFrame.MarginRight = Unit.FromPoint(horizontalMargins);
-            textFrame.MarginTop = Unit.FromPoint(verticalMargins);
-            textFrame.MarginBottom = Unit.FromPoint(verticalMargins);
-        }
+        CenterContent(textFrame, container.Content.Dimensions!, style);
 
         visitor.VisitedObjects.Pop();
-
         container.Dimensions = style.Dimensions;
     }
 
 
-    internal static void SetBookmark(SStyle style, TextFrame tf) {
+    internal static void SetBookmark(SStyle style, TextFrame tf)
+    {
         tf.Width = Unit.FromPoint(1);
         tf.Height = Unit.FromPoint(1);
         tf.AddParagraph().AddBookmark("#" + style.Name!);
+    }
+
+
+    internal static void SetPadding(TextFrame tf, SStyle style)
+    {
+        if (style.Padding != null)
+        {
+            SPadding padding = style.Padding;
+
+            tf.MarginLeft = SMetricsUtil.GetUnitValue(padding.Left ?? new SMeasure(0), style.Dimensions!.X);
+            tf.MarginRight = SMetricsUtil.GetUnitValue(padding.Right ?? new SMeasure(0), style.Dimensions!.X);
+            tf.MarginTop = SMetricsUtil.GetUnitValue(padding.Top ?? new SMeasure(0), style.Dimensions!.Y);
+            tf.MarginBottom = SMetricsUtil.GetUnitValue(padding.Bottom ?? new SMeasure(0), style.Dimensions!.Y);
+        }
+    }
+
+    internal static void CenterContent(TextFrame tf, SDimensions contentDimensions, SStyle style)
+    {
+        if (style.Centered ?? false)
+        {
+            double sonX = contentDimensions.X;
+            double sonY = contentDimensions.Y;
+            double horizontalMargins = (style.Dimensions!.X - sonX) / 2;
+            double verticalMargins = (style.Dimensions!.Y - sonY) / 2;
+            tf.MarginLeft = Unit.FromPoint(horizontalMargins);
+            tf.MarginRight = Unit.FromPoint(horizontalMargins);
+            tf.MarginTop = Unit.FromPoint(verticalMargins);
+            tf.MarginBottom = Unit.FromPoint(verticalMargins);
+        }
     }
 }

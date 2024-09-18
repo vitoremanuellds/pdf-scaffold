@@ -1,59 +1,33 @@
-using MigraDoc.DocumentObjectModel;
-using MigraDoc.DocumentObjectModel.Shapes;
-using MigraDoc.DocumentObjectModel.Tables;
 using PDFScaffold.Layout;
+using PDFScaffold.Metrics;
 using PDFScaffold.Styling;
 
 namespace PDFScaffold.Visitors.Default;
 
-public static class ForColumn {
+internal static class ForColumn
+{
 
-    public static void DoForColumn(this SVisitor visitor, SColumn column) {
+    public static void DoForColumn(this SVisitor visitor, SColumn column)
+    {
         SStyle style = visitor.GetOrCreateStyle(column.Style, column.FathersStyle!, column.UseStyle);
+        SDimensions parentsDimensions = column.FathersStyle!.Dimensions!;
+        var (tf, table) = SVisitorUtils.GetMigradocObjectsForTables(visitor);
+        style.Dimensions = parentsDimensions.Copy();
 
-        var father = visitor.VisitedObjects.Peek();
-        TextFrame tf;
-        Table table;
-
-        if (father is Section section)
-        {
-            tf = section.AddTextFrame();
-            table = tf.AddTable();
-        } else if (father is Cell c) {
-            tf = c.AddTextFrame();
-            table = tf.AddTable();
-        } else if (father is TextFrame t) {
-            tf = t;
-            table = tf.AddTable();
-        } else {
-            throw new Exception("An SColumn can only be inside an SSection, SContainer or SRow");
-        }
-
-        style.Dimensions = column.FathersStyle!.Dimensions!.Copy();
-
-        SetWidthAndHeight(tf, style, column.FathersStyle!.Dimensions!);
-
-        if (style.Borders != null) { 
-            var (x, y) = SetBorders(table, style, column.FathersStyle!.Dimensions!);
-            style.Dimensions!.X -= x;
-            style.Dimensions!.Y -= y;
-
-            // Maybe we will need to subtract from the height and width
-        }
-        
-
-        // Format
-        SetFormat(table, style, column.FathersStyle!.Dimensions!);
-
-        // Shading
-        SetShading(table, style);
+        SVisitorUtils.SetWidthAndHeight(tf, style, parentsDimensions);
+        SVisitorUtils.SetTableBorders(table, style, style.Dimensions);
+        SVisitorUtils.SetFormat(table.Format, style, style.Dimensions);
+        SVisitorUtils.SetShading(table.Shading, style);
 
         table.AddColumn(style.Dimensions!.X);
-
         for (int i = 0; i < column.Elements.Count; i++)
         {
             var cell = table.AddRow().Cells[0];
-            if (i == 0 && style.Name != null) { SetBookmark(style, cell.AddTextFrame()); }
+            if (i == 0)
+            {
+                SVisitorUtils.SetBookmark(cell, style);
+            }
+
             visitor.VisitedObjects.Push(cell);
 
             var el = column.Elements.ElementAt(i);
@@ -65,20 +39,4 @@ public static class ForColumn {
 
         column.Dimensions = style.Dimensions;
     }
-
-
-    internal static (TextFrame, Table) GetMigradocObjects(this SColumn column, SVisitor visitor) {
-        var migraDocParent = visitor.VisitedObjects.Peek();
-
-        if (migraDocParent is Section section) 
-        {
-            var tf = section.AddTextFrame();
-            return (tf, tf.AddTable());
-        } 
-        else 
-        {
-            throw new Exception("An SColumn can not be placed inside another SColumn.");
-        }
-    }
-
 }
