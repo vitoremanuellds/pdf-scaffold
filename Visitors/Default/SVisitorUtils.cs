@@ -58,6 +58,15 @@ internal static class SVisitorUtils
         }
     }
 
+    internal static void SetWidthAndHeight(Row row, SStyle style, SDimensions dimensions)
+    {
+        if (style.Height != null)
+        {
+            row.Height = SMetricsUtil.GetUnitValue(style.Height, dimensions.Y);
+            style.Dimensions!.Y -= row.Height.Point;
+        }
+    }
+
     internal static void SetFormat(ParagraphFormat format, SStyle style, SDimensions dimensions)
     {
         format.Font.Bold = style.Bold ?? false;
@@ -69,7 +78,7 @@ internal static class SVisitorUtils
         }
     }
 
-    internal static void SetTableBorders(Table table, SStyle style, SDimensions dimensions)
+    internal static void SetTableBorders(Borders borders, SStyle style, SDimensions dimensions)
     {
         if (style.Borders != null)
         {
@@ -78,34 +87,34 @@ internal static class SVisitorUtils
 
             if (style.Borders!.Left != null)
             {
-                SetTableBorder(dimensions, style.Borders.Left, table.Borders.Left, true);
-                table.Borders.DistanceFromLeft = SMetricsUtil.GetUnitValue(style.Borders.Left.DistanceFromContent ?? new SMeasure(0), dimensions.X);
+                SetTableBorder(dimensions, style.Borders.Left, borders.Left, true);
+                borders.DistanceFromLeft = SMetricsUtil.GetUnitValue(style.Borders.Left.DistanceFromContent ?? new SMeasure(0), dimensions.X);
                 bordersWidth += (style.Borders.Left.Width ?? new SMeasure(0)).Value;
-                bordersWidth += table.Borders.DistanceFromLeft.Point;
+                bordersWidth += borders.DistanceFromLeft.Point;
             }
 
             if (style.Borders!.Right != null)
             {
-                SetTableBorder(dimensions, style.Borders.Right, table.Borders.Right, true);
-                table.Borders.DistanceFromRight = SMetricsUtil.GetUnitValue(style.Borders.Right.DistanceFromContent ?? new SMeasure(0), dimensions.X);
+                SetTableBorder(dimensions, style.Borders.Right, borders.Right, true);
+                borders.DistanceFromRight = SMetricsUtil.GetUnitValue(style.Borders.Right.DistanceFromContent ?? new SMeasure(0), dimensions.X);
                 bordersWidth += (style.Borders.Right.Width ?? new SMeasure(0)).Value;
-                bordersWidth += table.Borders.DistanceFromRight.Point;
+                bordersWidth += borders.DistanceFromRight.Point;
             }
 
             if (style.Borders!.Bottom != null)
             {
-                SetTableBorder(dimensions, style.Borders.Bottom, table.Borders.Bottom, false);
-                table.Borders.DistanceFromBottom = SMetricsUtil.GetUnitValue(style.Borders.Bottom.DistanceFromContent ?? new SMeasure(0), dimensions.Y);
+                SetTableBorder(dimensions, style.Borders.Bottom, borders.Bottom, false);
+                borders.DistanceFromBottom = SMetricsUtil.GetUnitValue(style.Borders.Bottom.DistanceFromContent ?? new SMeasure(0), dimensions.Y);
                 bordersHeight += (style.Borders.Bottom.Width ?? new SMeasure(0)).Value;
-                bordersHeight += table.Borders.DistanceFromBottom.Point;
+                bordersHeight += borders.DistanceFromBottom.Point;
             }
 
             if (style.Borders!.Top != null)
             {
-                SetTableBorder(dimensions, style.Borders.Top, table.Borders.Top, false);
-                table.Borders.DistanceFromTop = SMetricsUtil.GetUnitValue(style.Borders.Top.DistanceFromContent ?? new SMeasure(0), dimensions.Y);
+                SetTableBorder(dimensions, style.Borders.Top, borders.Top, false);
+                borders.DistanceFromTop = SMetricsUtil.GetUnitValue(style.Borders.Top.DistanceFromContent ?? new SMeasure(0), dimensions.Y);
                 bordersHeight += (style.Borders.Top.Width ?? new SMeasure(0)).Value;
-                bordersHeight += table.Borders.DistanceFromTop.Point;
+                bordersHeight += borders.DistanceFromTop.Point;
             }
 
 
@@ -200,6 +209,33 @@ internal static class SVisitorUtils
         }
     }
 
+    internal static VerticalAlignment GetVerticalAlignment(this SAlignment alignment)
+    {
+        return alignment switch
+        {
+            SAlignment.Start => MigraDoc.DocumentObjectModel.Tables.VerticalAlignment.Top,
+            SAlignment.Center => MigraDoc.DocumentObjectModel.Tables.VerticalAlignment.Center,
+            SAlignment.End => MigraDoc.DocumentObjectModel.Tables.VerticalAlignment.Bottom,
+            _ => MigraDoc.DocumentObjectModel.Tables.VerticalAlignment.Top
+        };
+    }
+
+    internal static void GenerateColumns(this Table table, int columns)
+    {
+        for (int i = 0; i < columns; i++)
+        {
+            table.AddColumn();
+        }
+    }
+
+    internal static void GenerateRows(this Table table, int rows)
+    {
+        for (int i = 0; i < rows; i++)
+        {
+            table.AddRow();
+        }
+    }
+
     internal static (TextFrame, Table) GetMigradocObjectsForTables(SVisitor visitor)
     {
         var migraDocParent = visitor.VisitedObjects.Peek();
@@ -276,6 +312,33 @@ internal static class SVisitorUtils
         else
         {
             throw new Exception("An SImage can only be placed inside SSection, SColumn, SRow, SContainer and STableCells.");
+        }
+    }
+
+    public static (TextFrame, TextFrame, Cell) GetMigradocObjectsForCell(SVisitor visitor)
+    {
+        var migradocParent = visitor.VisitedObjects.Peek();
+
+        if (migradocParent is Cell c)
+        {
+            return (c.AddTextFrame(), c.AddTextFrame(), c);
+        }
+        else
+        {
+            throw new Exception("An STableCell can only be placed inside an STableRow.");
+        }
+    }
+
+    public static Row GetMigradocObjectForRow(SVisitor visitor)
+    {
+        var migradocParent = visitor.VisitedObjects.Peek();
+        if (migradocParent is Table table)
+        {
+            return table.AddRow();
+        }
+        else
+        {
+            throw new Exception("The STableRow should only be placed inside an STable.");
         }
     }
 }

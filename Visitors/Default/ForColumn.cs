@@ -7,7 +7,7 @@ namespace PDFScaffold.Visitors.Default;
 internal static class ForColumn
 {
 
-    public static void DoForColumn(this SVisitor visitor, SColumn column)
+    internal static void DoForColumn(this SVisitor visitor, SColumn column)
     {
         SStyle style = visitor.GetOrCreateStyle(column.Style, column.FathersStyle!, column.UseStyle);
         SDimensions parentsDimensions = column.FathersStyle!.Dimensions!;
@@ -15,7 +15,7 @@ internal static class ForColumn
         style.Dimensions = parentsDimensions.Copy();
 
         SVisitorUtils.SetWidthAndHeight(tf, style, parentsDimensions);
-        SVisitorUtils.SetTableBorders(table, style, style.Dimensions);
+        SVisitorUtils.SetTableBorders(table.Borders, style, style.Dimensions);
         SVisitorUtils.SetFormat(table.Format, style, style.Dimensions);
         SVisitorUtils.SetShading(table.Shading, style);
 

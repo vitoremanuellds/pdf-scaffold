@@ -5,14 +5,17 @@ using PDFScaffold.Styling;
 
 namespace PDFScaffold.Visitors.Default;
 
-internal static class ForSection {
+internal static class ForSection
+{
 
-    public static void DoForSection(this SVisitor visitor, SSection section) {
+    internal static void DoForSection(this SVisitor visitor, SSection section)
+    {
         var sec = visitor.Document.AddSection();
 
         SPageFormat pageFormat = section.PageFormat ?? SPageFormat.A4();
 
-        if (pageFormat.Height.IsPercentage || pageFormat.Width.IsPercentage) {
+        if (pageFormat.Height.IsPercentage || pageFormat.Width.IsPercentage)
+        {
             throw new Exception("The percentage measure can not be used to define the size of the section!");
         }
 
@@ -22,7 +25,7 @@ internal static class ForSection {
         SMargin margin = section.Margin
             ?? SMargin.All(new SMeasure(inches: 1));
 
-        var width = pageFormat!.Width.Value;                        
+        var width = pageFormat!.Width.Value;
         var height = pageFormat!.Height.Value;
 
         var left = margin.Left ?? new SMeasure(inches: 0);
@@ -40,8 +43,8 @@ internal static class ForSection {
 
         var x = width - left.Value - right.Value;
         var y = height - top.Value - bottom.Value;
-        
-        SStyle style = 
+
+        SStyle style =
             visitor.GetStyle(section.Style, section.UseStyle) ?? new SStyle();
 
         var dimensions = new SDimensions(x: x, y: y);
@@ -49,7 +52,8 @@ internal static class ForSection {
 
         visitor.VisitedObjects.Push(sec);
 
-        foreach (SSectionElement element in elements) {
+        foreach (SSectionElement element in elements)
+        {
             element.FathersStyle = style;
             element.Accept(visitor);
             // element.GetType().GetMethod("Accept")!.Invoke(element, [visitor]);

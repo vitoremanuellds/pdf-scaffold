@@ -6,10 +6,10 @@ using PDFScaffold.Styling;
 
 namespace PDFScaffold.Visitors.Default;
 
-public static class ForContainer
+internal static class ForContainer
 {
 
-    public static void DoForContainer(this SVisitor visitor, SContainer container)
+    internal static void DoForContainer(this SVisitor visitor, SContainer container)
     {
         SStyle style = visitor.GetOrCreateStyle(container.Style, container.FathersStyle!, container.UseStyle);
         SDimensions parentsDimensions = container.FathersStyle!.Dimensions!;

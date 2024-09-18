@@ -15,7 +15,7 @@ internal static class ForRow
         style.Dimensions = parentsDimensions.Copy();
 
         SVisitorUtils.SetWidthAndHeight(tf, style, parentsDimensions);
-        SVisitorUtils.SetTableBorders(table, style, parentsDimensions);
+        SVisitorUtils.SetTableBorders(table.Borders, style, parentsDimensions);
         SVisitorUtils.SetFormat(table.Format, style, row.FathersStyle!.Dimensions!);
         SVisitorUtils.SetShading(table.Shading, style);
 

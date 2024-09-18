@@ -11,7 +11,7 @@ namespace PDFScaffold.Visitors.Default;
 internal static class ForImage
 {
 
-    public static void DoForImage(this SVisitor visitor, SImage image)
+    internal static void DoForImage(this SVisitor visitor, SImage image)
     {
         SStyle style = visitor.GetOrCreateStyle(image.Style, image.FathersStyle!, image.UseStyle);
         SDimensions parentsDimensions = image.FathersStyle!.Dimensions!;
