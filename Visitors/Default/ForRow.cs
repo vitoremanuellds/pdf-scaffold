@@ -11,7 +11,8 @@ internal static class ForRow
     {
         SStyle style = visitor.GetOrCreateStyle(row.Style, row.FathersStyle!, row.UseStyle);
         SDimensions parentsDimensions = row.FathersStyle!.Dimensions!;
-        var (tf, table) = SVisitorUtils.GetMigradocObjectsForTables(visitor);
+        bool dimensionsSet = style.Width != null && style.Height != null;
+        var (tf, table) = SVisitorUtils.GetMigradocObjectsForTables(visitor, dimensionsSet);
         style.Dimensions = parentsDimensions.Copy();
 
         SVisitorUtils.SetWidthAndHeight(tf, style, parentsDimensions);

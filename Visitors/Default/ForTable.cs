@@ -11,7 +11,8 @@ internal static class ForTable
     {
         SStyle style = visitor.GetOrCreateStyle(table.Style, table.FathersStyle!, table.UseStyle);
         SDimensions parentsDimensions = table.FathersStyle!.Dimensions!;
-        var (tf, t) = SVisitorUtils.GetMigradocObjectsForTables(visitor);
+        bool dimensionsSet = style.Width != null && style.Height != null;
+        var (tf, t) = SVisitorUtils.GetMigradocObjectsForTables(visitor, dimensionsSet);
         style.Dimensions = parentsDimensions.Copy();
 
         SVisitorUtils.SetWidthAndHeight(tf, style, parentsDimensions);

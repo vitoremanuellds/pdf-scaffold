@@ -10,7 +10,8 @@ internal static class ForTableCell
     {
         SStyle style = visitor.GetOrCreateStyle(cell.Style, cell.FathersStyle!, cell.UseStyle);
         SDimensions parentsDimensions = cell.FathersStyle!.Dimensions!;
-        var (bookmarkTf, tf, c) = SVisitorUtils.GetMigradocObjectsForCell(visitor);
+        bool dimensionsSet = style.Width != null && style.Height != null;
+        var (bookmarkTf, tf, c) = SVisitorUtils.GetMigradocObjectsForCell(visitor, dimensionsSet);
         style.Dimensions = parentsDimensions.Copy();
 
         SVisitorUtils.SetBookmark(bookmarkTf, cell.Name);
@@ -18,7 +19,11 @@ internal static class ForTableCell
         SVisitorUtils.SetBorders(c.Borders, style, style.Dimensions);
         SVisitorUtils.SetShading(c.Shading, style);
 
-        visitor.VisitedObjects.Push(tf);
+        if (tf == null) {
+            visitor.VisitedObjects.Push(c);    
+        } else {
+            visitor.VisitedObjects.Push(tf);
+        }
         cell.Content.FathersStyle = style;
         cell.Content.Accept(visitor);
 

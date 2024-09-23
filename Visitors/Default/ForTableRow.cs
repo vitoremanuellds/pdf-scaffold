@@ -12,7 +12,7 @@ internal static class ForTableRow
     {
         SStyle style = visitor.GetOrCreateStyle(row.Style, row.FathersStyle!, row.UseStyle);
         SDimensions parentsDimensions = row.FathersStyle!.Dimensions!;
-        var r = SVisitorUtils.GetMigradocObjectForRow(visitor);
+        var r = SVisitorUtils.GetMigradocObjectForRow(visitor, row.RowIndex);
         style.Dimensions = parentsDimensions.Copy();
 
         // Style Row
@@ -32,7 +32,7 @@ internal static class ForTableRow
             FillRowSpan(cells, row, cell, c, ref columnIndex);
 
             visitor.VisitedObjects.Push(c);
-            if (row.RowIndex == 0)
+            if (row.RowIndex == 0 && columnIndex == 0)
             {
                 SVisitorUtils.SetBookmark(c, row.Name);
             }

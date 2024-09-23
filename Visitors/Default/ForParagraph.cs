@@ -15,7 +15,8 @@ namespace PDFScaffold.Visitors.Default
         {
             SStyle style = visitor.GetOrCreateStyle(paragraph.Style, paragraph.FathersStyle!, paragraph.UseStyle);
             SDimensions parentsDimensions = paragraph.FathersStyle!.Dimensions!;
-            var (tf, p) = SVisitorUtils.GetMigradocObjectsForParagraph(visitor, style.Width != null && style.Height != null);
+            bool dimensionsSet = style.Width != null && style.Height != null;
+            var (tf, p) = SVisitorUtils.GetMigradocObjectsForParagraph(visitor,dimensionsSet);
             style.Dimensions = parentsDimensions.Copy();
 
             if (paragraph.Name != null)

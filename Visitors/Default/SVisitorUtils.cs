@@ -137,7 +137,8 @@ internal static class SVisitorUtils
         if (style.FontSize != null)
         {
             format.Font.Size = SMetricsUtil.GetUnitValue(style.FontSize, dimensions.Y);
-        } else if (isHeading)
+        }
+        else if (isHeading)
         {
             format.Font.Size = SHeading.GetFontSize(level);
         }
@@ -177,7 +178,7 @@ internal static class SVisitorUtils
         {
             format.LineSpacingRule = LineSpacingRule.Single;
             format.LineSpacing = SMetricsUtil.GetUnitValue(style.LineSpacing, dimensions.Y);
-        }    
+        }
         format.SpaceBefore = SMetricsUtil.GetUnitValue(style.SpaceBefore ?? new(10), dimensions.Y);
         if (style.SpaceAfter != null)
         {
@@ -300,18 +301,18 @@ internal static class SVisitorUtils
         if (name != null)
         {
             var tf = cell.AddTextFrame();
-            tf.Width = 0;
-            tf.Height = 0;
+            tf.Width = 1;
+            tf.Height = 1;
             tf.AddParagraph().AddBookmark("#" + name);
         }
     }
 
     internal static void SetBookmark(TextFrame tf, string? name)
     {
+        tf.Width = 1;
+        tf.Height = 1;
         if (name != null)
         {
-            tf.Width = 0;
-            tf.Height = 0;
             tf.AddParagraph().AddBookmark("#" + name);
         }
     }
@@ -359,12 +360,16 @@ internal static class SVisitorUtils
         }
     }
 
-    internal static (TextFrame, Table) GetMigradocObjectsForTables(SVisitor visitor)
+    internal static (TextFrame?, Table) GetMigradocObjectsForTables(SVisitor visitor, bool needTextFrame = false)
     {
         var migraDocParent = visitor.VisitedObjects.Peek();
 
         if (migraDocParent is Section section)
         {
+            if (!needTextFrame)
+            {
+                return (null, section.AddTable());
+            }
             var tf = section.AddTextFrame();
             return (tf, tf.AddTable());
         }
@@ -375,6 +380,10 @@ internal static class SVisitorUtils
         }
         else if (migraDocParent is TextFrame t)
         {
+            if (!needTextFrame)
+            {
+                return (null, t.AddTable());
+            }
             var table = t.AddTable();
             table.AddColumn();
             var tf = table.AddRow().Cells[0].AddTextFrame();
@@ -438,12 +447,15 @@ internal static class SVisitorUtils
         }
     }
 
-    internal static (TextFrame, TextFrame, Cell) GetMigradocObjectsForCell(SVisitor visitor)
+    internal static (TextFrame, TextFrame?, Cell) GetMigradocObjectsForCell(SVisitor visitor, bool needTextFrame = false)
     {
         var migradocParent = visitor.VisitedObjects.Peek();
 
         if (migradocParent is Cell c)
         {
+            if (!needTextFrame) {
+                return (c.AddTextFrame(), null, c);
+            }
             return (c.AddTextFrame(), c.AddTextFrame(), c);
         }
         else
@@ -452,12 +464,12 @@ internal static class SVisitorUtils
         }
     }
 
-    internal static Row GetMigradocObjectForRow(SVisitor visitor)
+    internal static Row GetMigradocObjectForRow(SVisitor visitor, int rowIndex)
     {
         var migradocParent = visitor.VisitedObjects.Peek();
         if (migradocParent is Table table)
         {
-            return table.AddRow();
+            return table.Rows[rowIndex];
         }
         else
         {

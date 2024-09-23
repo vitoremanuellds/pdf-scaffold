@@ -23,6 +23,20 @@ public class SParagraph(
     /// </summary>
     public ICollection<STextElement> Content { get; } = content;
 
+    /// <summary>
+    /// Represents a paragraph inside the SDocument.
+    /// </summary>
+    /// <param name="content">The text of the SParagraph.</param>
+    /// <param name="style">The style used in the SParagraph.</param>
+    /// <param name="useStyle">The name of the style referenced to be used in the SParagraph.</param>
+    /// <param name="name">The name of the SParagraph. It is used to reference the SParagraph using an SLink.</param>
+    public SParagraph(
+        string content,
+        SStyle? style = null,
+        string? useStyle = null,
+        string? name = null
+    ) : this([new SText(content)], style, useStyle, name) { }
+
     public override void Accept(IPdfScaffoldVisitor visitor)
     {
         visitor.ForParagraph(this);
