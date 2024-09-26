@@ -36,7 +36,7 @@ namespace PDFScaffold.Styling;
 /// <param name="verticalAlignment">The vertical aligment of the content inside the component. It determines the alignment relative to the height of the document. It is applied to STableRow and STableCell.</param>
 /// <param name="horizontalAlignment">The alignment of the component(s). It is applied to SParagraph.</param>
 /// <param name="borders">The style of the component's borders. It is applied to SContainer, SImage, SParagraph, SColumn, SRow, STable, STableRow and STableCell. In SContainer and SImage, only the Left Border is used to configure the whole border of the component.</param>
-/// <param name="padding">The style of the component's padding. It is applied to.</param>
+/// <param name="padding">The style of the component's padding. It is applied to SContainer.</param>
 /// <param name="centered">If true, the content inside the component will be centered and the <c>margin</c> will be disconsidered.It is applied to SContainer and only works correctly if both the SContainer and its content have their Widths and Heights set. This value is only applied to the current component.</param>
 public class SStyle(
     string? name = null,
@@ -50,6 +50,7 @@ public class SStyle(
     SMeasure? lineSpacing = null,
     SMeasure? spaceBefore = null,
     SMeasure? spaceAfter = null,
+    SAlignment? alignment = null,
     Color? shading = null,
     SMeasure? width = null,
     SMeasure? height = null,
@@ -110,6 +111,11 @@ public class SStyle(
     /// The size of the space after the paragraph. Only works on SParagraphs.
     /// </summary>
     public SMeasure? SpaceAfter { get; } = spaceAfter;
+    
+    /// <summary>
+    /// The alignment of an SParagraph.
+    /// </summary>
+    public SAlignment? Alignment { get; } = alignment;
 
     /// <summary>
     /// The color of the background inside the component. It is applied to SContainer, SColumn, SRow, STable, STableRow, STableCell and SParagraph.
@@ -136,11 +142,11 @@ public class SStyle(
     /// </summary>
     public double? Resolution { get; } = resolution;
     /// <summary>
-    /// The vertical aligment of the content inside the component. It determines the alignment relative to the height of the document. It is applied to STableRow and STableCell.
+    /// The vertical aligment of the content inside the component. It determines the alignment relative to the height of the document. It is applied to SContainer, STableRow and STableCell.
     /// </summary>
     public SAlignment? VerticalAlignment { get; } = verticalAlignment;
     /// <summary>
-    /// The alignment of the component(s). It is applied to SParagraph.
+    /// The alignment of the component(s). It is applied to SContainer.
     /// </summary>
     public SAlignment? HorizontalAlignment { get; } = horizontalAlignment;
     /// <summary>
@@ -163,7 +169,7 @@ public class SStyle(
     //public SMargin? Margin { get; } = margin;
 
     /// <summary>
-    /// If true, the content inside the component will be centered and the <c>margin</c> will be disconsidered.It is applied to SContainer and only works correctly if both the SContainer and its content have their Widths and Heights set. This value is only applied to the current component.
+    /// If true, the content inside the component will be centered and the <c>padding</c> will be disconsidered.It is applied to SContainer and only works correctly if both the SContainer and its content have their Widths and Heights set. This value is only applied to the current component.
     /// </summary>
     public bool? Centered { get; } = centered;
 
@@ -180,6 +186,7 @@ public class SStyle(
             LineSpacing ?? style?.LineSpacing,
             SpaceBefore ?? style?.SpaceBefore,
             SpaceAfter ?? style?.SpaceAfter,
+            Alignment ?? style?.Alignment,
             Shading ?? style?.Shading,
             Width,
             Height,

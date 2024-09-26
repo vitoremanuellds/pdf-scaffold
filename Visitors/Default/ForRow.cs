@@ -35,7 +35,6 @@ internal static class ForRow
             visitor.VisitedObjects.Push(cell);
 
             var el = row.Elements.ElementAt(i);
-            style.Dimensions.X = table.Columns[i].Width.Point;
             el.FathersStyle = style;
             el.Accept(visitor);
 

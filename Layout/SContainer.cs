@@ -12,7 +12,7 @@ namespace PDFScaffold.Layout;
 /// <param name="style">The SStyle used inside the SContainer.</param>
 /// <param name="useStyle">The name of the Style to be used on the SContainer.</param>
 public class SContainer(
-    SSectionElement content,
+    SSectionElement? content = null,
     SStyle? style = null,
     string? useStyle = null,
     string? name = null
@@ -23,7 +23,7 @@ public class SContainer(
     /// <summary>
     /// The SSectionElement contained inside the SContainer.
     /// </summary>
-    public SSectionElement Content { get; } = content;
+    public SSectionElement? Content { get; } = content;
 
 
     public override void Accept(IPdfScaffoldVisitor visitor) {

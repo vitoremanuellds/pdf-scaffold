@@ -22,14 +22,18 @@ internal static class ForContainer
         SVisitorUtils.SetShading(textFrame.FillFormat, style);
         SetPadding(textFrame, style);
 
-        visitor.VisitedObjects.Push(textFrame);
+        if (container.Content != null)
+        {
+            visitor.VisitedObjects.Push(textFrame);
 
-        container.Content.FathersStyle = style;
-        container.Content.Accept(visitor);
+            container.Content.FathersStyle = style;
+            container.Content.Accept(visitor);
 
-        CenterContent(textFrame, container.Content.Dimensions!, style);
+            CenterContent(textFrame, container.Content.Dimensions!, style);
 
-        visitor.VisitedObjects.Pop();
+            visitor.VisitedObjects.Pop();
+        }
+        
         container.Dimensions = style.Dimensions;
     }
 
@@ -44,15 +48,13 @@ internal static class ForContainer
 
     internal static void SetPadding(TextFrame tf, SStyle style)
     {
-        if (style.Padding != null)
-        {
-            SPadding padding = style.Padding;
+        if (style.Padding == null) return;
+        var padding = style.Padding;
 
-            tf.MarginLeft = SMetricsUtil.GetUnitValue(padding.Left ?? new SMeasure(0), style.Dimensions!.X);
-            tf.MarginRight = SMetricsUtil.GetUnitValue(padding.Right ?? new SMeasure(0), style.Dimensions!.X);
-            tf.MarginTop = SMetricsUtil.GetUnitValue(padding.Top ?? new SMeasure(0), style.Dimensions!.Y);
-            tf.MarginBottom = SMetricsUtil.GetUnitValue(padding.Bottom ?? new SMeasure(0), style.Dimensions!.Y);
-        }
+        tf.MarginLeft = SMetricsUtil.GetUnitValue(padding.Left ?? new SMeasure(0), style.Dimensions!.X);
+        tf.MarginRight = SMetricsUtil.GetUnitValue(padding.Right ?? new SMeasure(0), style.Dimensions!.X);
+        tf.MarginTop = SMetricsUtil.GetUnitValue(padding.Top ?? new SMeasure(0), style.Dimensions!.Y);
+        tf.MarginBottom = SMetricsUtil.GetUnitValue(padding.Bottom ?? new SMeasure(0), style.Dimensions!.Y);
     }
 
     internal static void CenterContent(TextFrame tf, SDimensions contentDimensions, SStyle style)

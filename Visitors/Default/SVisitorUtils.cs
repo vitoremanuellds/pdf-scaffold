@@ -159,7 +159,7 @@ internal static class SVisitorUtils
 
         format.Font.Subscript = (style.Subscript ?? false) && !(style.Superscript ?? false);
         format.Font.Superscript = (style.Superscript ?? false) && !(style.Subscript ?? false);
-        switch (style.HorizontalAlignment)
+        switch (style.Alignment)
         {
             case SAlignment.Start:
                 format.Alignment = ParagraphAlignment.Left;
@@ -427,19 +427,19 @@ internal static class SVisitorUtils
         if (migraDocParent is Section section)
         {
             var tf = section.AddTextFrame();
-            return (tf, tf.AddImage(image.Path));
+            return (tf, section.AddImage(image.Path));
         }
         else if (migraDocParent is Cell cell)
         {
             var tf = cell.AddTextFrame();
-            return (tf, tf.AddImage(image.Path));
+            return (tf, cell.AddImage(image.Path));
         }
         else if (migraDocParent is TextFrame t)
         {
             var table = t.AddTable();
             table.AddColumn();
             var tf = table.AddRow().Cells[0].AddTextFrame();
-            return (tf, tf.AddImage(image.Path));
+            return (tf, t.AddImage(image.Path));
         }
         else
         {

@@ -24,6 +24,7 @@ public class SMeasure {
     /// <param name="picas">The size in Picas</param>
     /// <param name="centimeters">The size in Centimeters</param>
     /// <param name="millimeters">The size in Millimeters</param>
+    /// <param name="pixels">The size in Pixels. By default, a pixel is equivalent to 0.75 points. Only works if the resolution of the document is equal to 72 points per inch.</param>
     /// <param name="percentage">The size in percentage relative to the Parent, only for Widths and Heights, or to the component itself.</param>
     /// <exception cref="Exception">If no value is given, an exception is thrown.</exception>
     public SMeasure(
@@ -32,6 +33,7 @@ public class SMeasure {
         double? picas = null,
         double? centimeters = null,
         double? millimeters = null,
+        double? pixels = null,
         double? percentage = null
     ) {
         if (points != null) {
@@ -44,8 +46,12 @@ public class SMeasure {
             Value = 72 / 2.54 * (double) centimeters;
         } else if (millimeters != null) {
             Value = 72 / 25.4 * (double) millimeters;
-        } else if (percentage != null) {
-            if (percentage <= 0 || percentage > 1) {
+        } else if (pixels != null)
+        {
+            Value = 0.75 * (double) pixels;
+        }
+        else if (percentage != null) {
+            if (percentage is <= 0 or > 1) {
                 throw new Exception(
                     "The value for a percentage measure must be greater than 0 and lesser than or equals to 1!"
                 );

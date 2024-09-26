@@ -49,6 +49,7 @@ internal static class ForTable
         }
 
         table.Dimensions = style.Dimensions;
+        visitor.VisitedObjects.Pop();
     }
 
     internal static (int, int) TableDimensions(ICollection<STableRow> rows)

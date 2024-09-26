@@ -24,6 +24,13 @@ public class SHeading(
     /// The level of the SHeading.
     /// </summary>
     public int Level { get; } = level;
+    
+    public SHeading(
+        string? content, 
+        int level = 1, 
+        SStyle? style = null, 
+        string? useStyle = null, 
+        string? name = null) : this([new SText(content ?? "")], level, style, useStyle, name) {}
 
     public override void Accept(IPdfScaffoldVisitor visitor)
     {
