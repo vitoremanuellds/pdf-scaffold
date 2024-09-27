@@ -158,7 +158,7 @@ public class SStyle(
     /// </summary>
     public SPositionType? PositionType { get; } = positionType;
     /// <summary>
-    /// The style of the component's padding. It is applied to.
+    /// The style of the component's padding. It is applied to SContainer.
     /// </summary>
     public SPadding? Padding { get; } = padding;
     // public ICollection<STabStop>? Tabstops { get; } = tabstops;

@@ -14,7 +14,7 @@ public enum SAlignment {
     /// </summary>
     End,
     /// <summary>
-    /// Justify the content. Only works with HorizontalAlignment.
+    /// Justify the content. Only works with Alignment.
     /// </summary>
     Justified
 }
