@@ -251,6 +251,10 @@ When a property of the SStyle is set in a component higher in the document, this
 
 If one of the properties is not set on the consctructor, then it is not applied to the component.
 
+The SStyle instance provides a Merge method, used to get the properties defined in another instance of SStyle use it if that property is not defined in itself. This method then returns the resulting SStyle.
+
+We can define a name to the SStyle as well. This is going to be used by other components to reference the style placed inside the styles properties inside the SDocument.
+
 ### SAlignment, SUnderline and SPositionType
 
 These enumerations are used to declare some predefined aspects of a component:
